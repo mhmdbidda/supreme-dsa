@@ -35,8 +35,8 @@ const MODULES: Module[] = [
     href: "/data-structures",
     title: "Data Structures",
     description:
-      "Push, pop, insert and traverse arrays, linked lists, stacks, queues and hash tables.",
-    status: "Coming next",
+      "Push, pop, enqueue and insert on stacks, queues and linked lists, with every pointer redrawn per step.",
+    status: "Ready",
     icon: Database,
   },
   {
@@ -123,7 +123,7 @@ export default function DashboardPage() {
             Modules
           </h2>
           <span className="font-mono text-[11px] text-ink-muted">
-            1 ready · 4 coming next
+            2 ready · 3 coming next
           </span>
         </div>
 
