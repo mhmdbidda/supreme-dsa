@@ -54,7 +54,7 @@ function CallTreeNodeView({
           {node.fn}({node.params})
         </span>
         {node.status === "returned" ? (
-          <span className="font-mono text-[12px] tracking-tight text-sorted">
+          <span className="font-mono text-[12px] tracking-tight text-sorted-ink">
             = {String(node.returnValue)}
           </span>
         ) : (
@@ -63,7 +63,7 @@ function CallTreeNodeView({
           </span>
         )}
         {node.isBaseCase ? (
-          <span className="rounded-full border border-sorted/50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-sorted">
+          <span className="rounded-full border border-sorted/50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-sorted-ink">
             base case
           </span>
         ) : null}
@@ -229,7 +229,7 @@ export function RecursionVisualizer() {
               placeholder={meta.inputPlaceholder}
               aria-invalid={inputError ? true : undefined}
               aria-describedby={inputError ? "recursion-input-error" : "recursion-input-hint"}
-              className="min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60"
+              className="min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/80"
             />
             <button
               type="submit"
@@ -266,7 +266,7 @@ export function RecursionVisualizer() {
                 placeholder={meta.inputPlaceholder}
                 aria-invalid={inputError ? true : undefined}
                 aria-describedby={inputError ? "recursion-input-error" : "recursion-input-hint"}
-                className="mt-2 min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60"
+                className="mt-2 min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/80"
               />
             </div>
             <div>
@@ -286,7 +286,7 @@ export function RecursionVisualizer() {
                 placeholder="7"
                 aria-invalid={inputError ? true : undefined}
                 aria-describedby={inputError ? "recursion-input-error" : "recursion-input-hint"}
-                className="mt-2 min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60"
+                className="mt-2 min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/80"
               />
             </div>
           </div>
@@ -323,7 +323,7 @@ export function RecursionVisualizer() {
             placeholder={meta.inputPlaceholder}
             aria-invalid={inputError ? true : undefined}
             aria-describedby={inputError ? "recursion-input-error" : "recursion-input-hint"}
-            className="min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60"
+            className="min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/80"
           />
           <button
             type="submit"
@@ -434,7 +434,12 @@ export function RecursionVisualizer() {
                 </p>
               </div>
             ) : (
-              <div className="mt-4 max-h-[420px] overflow-y-auto pr-1">
+              <div
+                tabIndex={0}
+                role="group"
+                aria-label="Call stack frames - scroll to see all frames"
+                className="mt-4 max-h-[420px] overflow-y-auto pr-1 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-1 focus:ring-offset-surface"
+              >
                 <ol className="space-y-2" aria-label="Call stack frames, top first">
                   {[...stack].reverse().map((frame, reverseIndex) => {
                     const isTop = reverseIndex === 0;
@@ -460,7 +465,7 @@ export function RecursionVisualizer() {
                           </span>
                         ) : null}
                         {baseCaseParams.has(frame.params) ? (
-                          <span className="rounded-full border border-sorted/50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-sorted">
+                          <span className="rounded-full border border-sorted/50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-sorted-ink">
                             base case
                           </span>
                         ) : null}
@@ -474,12 +479,12 @@ export function RecursionVisualizer() {
                     role="status"
                     className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-sorted/50 bg-surface-2 px-3 py-2"
                   >
-                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-sorted">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-sorted-ink">
                       popped
                     </span>
                     <span className="font-mono text-[12px] tracking-tight text-ink">
                       {popped.fn}({popped.params}) →{" "}
-                      <span className="text-sorted">{String(popped.returnValue)}</span>
+                      <span className="text-sorted-ink">{String(popped.returnValue)}</span>
                     </span>
                   </div>
                 ) : null}
@@ -516,7 +521,12 @@ export function RecursionVisualizer() {
                   — press Play to grow the tree
                 </p>
               ) : (
-                <ul className="mt-4 max-h-[420px] space-y-1.5 overflow-y-auto pr-1">
+                <ul
+                  tabIndex={0}
+                  role="group"
+                  aria-label="Call tree nodes - scroll to explore"
+                  className="mt-4 max-h-[420px] space-y-1.5 overflow-y-auto pr-1 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-1 focus:ring-offset-surface"
+                >
                   {treeNodes
                     .filter((node) => node.depth === 1)
                     .map((node) => (
@@ -620,7 +630,7 @@ export function RecursionVisualizer() {
               <CircleCheck
                 size={16}
                 strokeWidth={1.75}
-                className="mt-0.5 shrink-0 text-sorted"
+                className="mt-0.5 shrink-0 text-sorted-ink"
                 aria-hidden="true"
               />
               <div>

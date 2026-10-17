@@ -159,7 +159,12 @@ export default function AboutPage() {
           <span className="font-mono text-[13px] text-ink">.nvmrc</span>). Install
           once, then start the dev server:
         </p>
-        <pre className="mt-4 overflow-x-auto rounded-md border border-line bg-surface-2 p-4 font-mono text-[12px] leading-relaxed text-ink">
+        <pre
+          tabIndex={0}
+          role="group"
+          aria-label="Installation and development commands - scroll horizontally"
+          className="mt-4 overflow-x-auto rounded-md border border-line bg-surface-2 p-4 font-mono text-[12px] leading-relaxed text-ink focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-1 focus:ring-offset-surface"
+        >
 {`npm install
 npm run dev        # http://localhost:3000
 

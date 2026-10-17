@@ -28,21 +28,26 @@ export function QueueVisualizer({ items, step, emptyMessage }: QueueVisualizerPr
       <div className="m-auto flex max-w-sm flex-col items-center gap-3 text-center">
         <Inbox size={22} strokeWidth={1.5} className="text-ink-muted" aria-hidden="true" />
         {/* "Queue is empty" — the hint before the dash is the designed heading. */}
-        <p className="text-sm font-medium tracking-tight text-ink">
-          {emptyMessage.split(" — ")[0]}
-        </p>
-        <p className="text-[13px] leading-relaxed text-ink-muted">
-          {step?.description ?? emptyMessage}
-        </p>
+        {(() => {
+          const msg = step?.description ?? emptyMessage;
+          const parts = msg.split(" — ");
+          return (
+            <>
+              <p className="text-sm font-medium tracking-tight text-ink">{parts[0]}</p>
+              <p className="text-[13px] leading-relaxed text-ink-muted">{parts.length > 1 ? msg : msg}</p>
+            </>
+          );
+        })()}
       </div>
     );
   }
 
   return (
     <div
-      role="img"
-      aria-label={step?.description ?? `Queue with ${shown.length} node(s)`}
-      className="m-auto flex w-full items-center gap-1.5 overflow-x-auto px-1 py-2"
+      role="group"
+      tabIndex={0}
+      aria-label={step?.description ?? `Queue with ${shown.length} node(s) - scroll horizontally to navigate`}
+      className="m-auto flex w-full items-center gap-1.5 overflow-x-auto px-1 py-2 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-1 focus:ring-offset-surface"
     >
       {shown.map((value, index) => {
         const isFront = pointers.front === index;

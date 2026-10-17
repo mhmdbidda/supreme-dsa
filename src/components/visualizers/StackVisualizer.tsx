@@ -27,12 +27,16 @@ export function StackVisualizer({ items, step, emptyMessage }: StackVisualizerPr
       <div className="m-auto flex max-w-sm flex-col items-center gap-3 text-center">
         <Inbox size={22} strokeWidth={1.5} className="text-ink-muted" aria-hidden="true" />
         {/* "Stack is empty" — the hint before the dash is the designed heading. */}
-        <p className="text-sm font-medium tracking-tight text-ink">
-          {emptyMessage.split(" — ")[0]}
-        </p>
-        <p className="text-[13px] leading-relaxed text-ink-muted">
-          {step?.description ?? emptyMessage}
-        </p>
+        {(() => {
+          const msg = step?.description ?? emptyMessage;
+          const parts = msg.split(" — ");
+          return (
+            <>
+              <p className="text-sm font-medium tracking-tight text-ink">{parts[0]}</p>
+              <p className="text-[13px] leading-relaxed text-ink-muted">{parts.length > 1 ? msg : msg}</p>
+            </>
+          );
+        })()}
       </div>
     );
   }

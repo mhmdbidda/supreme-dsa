@@ -613,7 +613,12 @@ export function BenchmarkCenter() {
                 </p>
               </div>
             ) : (
-              <div className="mt-4 overflow-x-auto">
+              <div
+                tabIndex={0}
+                role="group"
+                aria-label="Benchmark results table - scroll horizontally to see all columns"
+                className="mt-4 overflow-x-auto focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-1 focus:ring-offset-surface"
+              >
                 <table className="w-full min-w-[560px] text-left">
                   <thead>
                     <tr className="border-b border-line">
@@ -713,7 +718,12 @@ export function BenchmarkCenter() {
               . This table is knowledge, not measurement — the charts above only APPROACH it,
               never prove it.
             </p>
-            <div className="mt-4 overflow-x-auto">
+            <div
+              tabIndex={0}
+              role="group"
+              aria-label="Theoretical complexity reference table - scroll horizontally to see all columns"
+              className="mt-4 overflow-x-auto focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-1 focus:ring-offset-surface"
+            >
               <table className="w-full min-w-[560px] text-left">
                 <thead>
                   <tr className="border-b border-line">

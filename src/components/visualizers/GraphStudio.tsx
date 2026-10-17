@@ -47,7 +47,7 @@ const TOOL_BUTTON_CLASS =
   "flex h-10 items-center gap-2 rounded-md border border-line bg-surface-2 px-3 font-mono text-[11px] uppercase tracking-[0.1em] text-ink transition-colors hover:border-white/20 hover:bg-[#1c1c1c] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line disabled:hover:bg-surface-2";
 
 const INPUT_CLASS =
-  "w-full rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60";
+  "w-full rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/80";
 
 const DISCLOSE_BUTTON_CLASS =
   "flex h-8 items-center gap-1.5 rounded-md border border-line bg-surface-2 px-2.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-muted transition-colors hover:border-white/20 hover:text-ink";
@@ -1123,7 +1123,12 @@ export function GraphStudio() {
                   No vertices yet.
                 </p>
               ) : (
-                <div className="mt-3 overflow-x-auto">
+                <div
+                  tabIndex={0}
+                  role="group"
+                  aria-label="Adjacency matrix - scroll horizontally to see all cells"
+                  className="mt-3 overflow-x-auto focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-1 focus:ring-offset-surface"
+                >
                   <table className="border-collapse font-mono text-[11px] tracking-tight">
                     <thead>
                       <tr>
@@ -1146,7 +1151,7 @@ export function GraphStudio() {
                               key={column}
                               className={cn(
                                 "min-w-7 border border-line px-1 py-1 text-center",
-                                cell !== 0 ? "text-ink" : "text-ink-muted/50",
+                                cell !== 0 ? "text-ink" : "text-ink-muted/80",
                               )}
                             >
                               {cell}

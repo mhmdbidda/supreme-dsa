@@ -351,7 +351,7 @@ export function SortingLab() {
                   placeholder="12, 4, -9, 7, 3"
                   aria-invalid={error ? true : undefined}
                   aria-describedby={error ? "custom-error" : "custom-hint"}
-                  className="min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60"
+                  className="min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/80"
                 />
                 <button
                   type="submit"
@@ -405,7 +405,7 @@ export function SortingLab() {
                     placeholder="7"
                     aria-invalid={targetError ? true : undefined}
                     aria-describedby={targetError ? "target-error" : "target-hint"}
-                    className="min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60"
+                    className="min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/80"
                   />
                   <button
                     type="submit"

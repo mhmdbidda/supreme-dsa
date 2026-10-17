@@ -14,13 +14,14 @@ type LinkedListVisualizerProps = {
 
 /** Empty list: the designed empty state plus the HEAD → null terminator. */
 function EmptyList({ message }: { message: string }) {
+  const parts = message.split(" — ");
+  const heading = parts[0];
+  const body = parts.length > 1 ? message : "The list has no nodes.";
   return (
     <div className="m-auto flex max-w-sm flex-col items-center gap-3 text-center">
       {/* "List is empty" — the hint before the dash is the designed heading. */}
-      <p className="text-sm font-medium tracking-tight text-ink">
-        {message.split(" — ")[0]}
-      </p>
-      <p className="text-[13px] leading-relaxed text-ink-muted">{message}</p>
+      <p className="text-sm font-medium tracking-tight text-ink">{heading}</p>
+      <p className="text-[13px] leading-relaxed text-ink-muted">{body}</p>
       <p className="font-mono text-[12px] tracking-tight text-ink-muted" aria-hidden="true">
         HEAD → <span className="text-accent/80">null</span>
       </p>
@@ -49,9 +50,10 @@ export function LinkedListVisualizer({
 
   return (
     <div
-      role="img"
-      aria-label={step?.description ?? `Linked list with ${shown.length} node(s)`}
-      className="m-auto flex w-full items-center gap-1.5 overflow-x-auto px-1 py-3"
+      role="group"
+      tabIndex={0}
+      aria-label={step?.description ?? `Linked list with ${shown.length} node(s) - scroll horizontally to navigate`}
+      className="m-auto flex w-full items-center gap-1.5 overflow-x-auto px-1 py-3 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-1 focus:ring-offset-surface"
     >
       {shown.map((value, index) => {
         const isHead = pointers.head === index;

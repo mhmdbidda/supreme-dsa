@@ -108,12 +108,13 @@ function toneOf(
 
 /** Empty tree: the designed empty state plus the `root → null` terminator. */
 function EmptyTree({ message }: { message: string }) {
+  const parts = message.split(" — ");
+  const heading = parts[0];
+  const body = parts.length > 1 ? message : "The tree is empty. Add nodes to build it.";
   return (
     <div className="m-auto flex max-w-sm flex-col items-center gap-3 text-center">
-      <p className="text-sm font-medium tracking-tight text-ink">
-        {message.split(" — ")[0]}
-      </p>
-      <p className="text-[13px] leading-relaxed text-ink-muted">{message}</p>
+      <p className="text-sm font-medium tracking-tight text-ink">{heading}</p>
+      <p className="text-[13px] leading-relaxed text-ink-muted">{body}</p>
       <p className="font-mono text-[12px] tracking-tight text-ink-muted" aria-hidden="true">
         root → <span className="text-accent/80">null</span>
       </p>

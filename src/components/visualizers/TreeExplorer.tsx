@@ -251,7 +251,7 @@ export function TreeExplorer() {
                   placeholder="50"
                   aria-invalid={fieldError !== null ? true : undefined}
                   aria-describedby={inputHintId}
-                  className="mt-2 w-full rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60"
+                  className="mt-2 w-full rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/80"
                 />
               </div>
             </div>
@@ -332,7 +332,12 @@ export function TreeExplorer() {
               </ul>
             </div>
 
-            <div className="mt-4 flex h-[40vh] min-h-[280px] max-h-[520px] items-start overflow-auto rounded-md border border-line bg-[#0d0d0d] p-4">
+            <div
+              tabIndex={0}
+              role="group"
+              aria-label="Tree visualization canvas - scroll to navigate wide trees"
+              className="mt-4 flex h-[40vh] min-h-[280px] max-h-[520px] items-start overflow-auto rounded-md border border-line bg-[#0d0d0d] p-4 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-1 focus:ring-offset-surface"
+            >
               <TreeVisualizer
                 tree={liveTree}
                 step={step}

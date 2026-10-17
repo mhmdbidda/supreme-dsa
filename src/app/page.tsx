@@ -65,7 +65,7 @@ const MODULES: Module[] = [
 /** Every module on the dashboard is built; this is the single "Ready" chip. */
 function ReadyBadge() {
   return (
-    <span className="flex items-center gap-1.5 rounded-full border border-sorted/50 bg-surface-2 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-sorted">
+    <span className="flex items-center gap-1.5 rounded-full border border-sorted/50 bg-surface-2 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-sorted-ink">
       <span className="h-1.5 w-1.5 rounded-full bg-sorted" aria-hidden="true" />
       Ready
     </span>
