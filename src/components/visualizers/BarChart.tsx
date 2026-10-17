@@ -67,6 +67,17 @@ export function BarChart({
               ? "bg-compare"
               : "bg-bar";
 
+        // Shape cues so state never relies on colour alone: sorted bars get a
+        // solid top edge, the active bar a bright outline, compared bars a
+        // dashed top edge.
+        const cue = isSorted
+          ? "border-t-2 border-sorted"
+          : isActive
+            ? "outline outline-1 -outline-offset-1 outline-white/70"
+            : isCompared
+              ? "border-t-2 border-dashed border-compare"
+              : null;
+
         return (
           <div
             key={index}
@@ -95,6 +106,7 @@ export function BarChart({
               className={cn(
                 "w-full rounded-t-[2px] transition-[height,background-color] duration-150 ease-out",
                 tone,
+                cue,
               )}
               style={{ height: `${height}%` }}
             />

@@ -78,7 +78,7 @@ export function LinkedListVisualizer({
                 className={cn(
                   "flex h-12 w-full items-center justify-center rounded-md border font-mono text-[15px] tracking-tight transition-colors duration-150",
                   isHighlighted
-                    ? "border-accent/70 bg-accent/10 text-accent"
+                    ? "border-accent/70 bg-accent/10 text-accent outline outline-2 -outline-offset-2 outline-accent/50"
                     : "border-line bg-surface-2 text-ink",
                 )}
               >

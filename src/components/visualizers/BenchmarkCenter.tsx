@@ -18,6 +18,7 @@ import { RecentExperiments } from "@/components/RecentExperiments";
 import { RangeControl } from "@/components/controls/RangeControl";
 import { SegmentedControl } from "@/components/controls/SegmentedControl";
 import { useRecentBenchmarkRuns } from "@/hooks/useRecentBenchmarkRuns";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import {
   BENCHMARK_ALGORITHMS,
   BENCHMARK_NOTE,
@@ -65,6 +66,7 @@ function ResultsChart({
   seriesNames: string[];
   logScale: boolean;
 }) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   return (
     <div className="panel p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -113,6 +115,7 @@ function ResultsChart({
                   stroke={algorithm ? ALGORITHM_COLORS[algorithm.id] : "#8a8a8a"}
                   strokeWidth={2}
                   dot={{ r: 3 }}
+                  isAnimationActive={!prefersReducedMotion}
                   connectNulls
                 />
               );
@@ -326,7 +329,7 @@ export function BenchmarkCenter() {
 
   const chipClass = (selected: boolean) =>
     cn(
-      "rounded-md border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors",
+      "inline-flex min-h-10 items-center justify-center rounded-md border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors",
       selected
         ? "border-accent/60 bg-surface-2 text-accent"
         : "border-line bg-surface text-ink-muted hover:text-ink",
@@ -489,7 +492,7 @@ export function BenchmarkCenter() {
                 <button
                   type="button"
                   onClick={handleRun}
-                  className="flex h-9 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+                  className="flex h-10 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
                 >
                   <Play size={14} strokeWidth={1.75} aria-hidden="true" />
                   Run benchmark
@@ -498,7 +501,7 @@ export function BenchmarkCenter() {
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="flex h-9 items-center gap-2 rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink"
+                  className="flex h-10 items-center gap-2 rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink"
                 >
                   <Square size={13} strokeWidth={1.75} aria-hidden="true" />
                   Cancel
@@ -538,7 +541,7 @@ export function BenchmarkCenter() {
                   type="button"
                   onClick={handleExportCsv}
                   disabled={exportRun === null}
-                  className="flex h-8 items-center gap-2 rounded-md border border-line bg-surface-2 px-3 text-[11px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex h-10 items-center gap-2 rounded-md border border-line bg-surface-2 px-3 text-[11px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Download size={13} strokeWidth={1.75} aria-hidden="true" />
                   CSV
@@ -547,7 +550,7 @@ export function BenchmarkCenter() {
                   type="button"
                   onClick={handleExportJson}
                   disabled={exportRun === null}
-                  className="flex h-8 items-center gap-2 rounded-md border border-line bg-surface-2 px-3 text-[11px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex h-10 items-center gap-2 rounded-md border border-line bg-surface-2 px-3 text-[11px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Download size={13} strokeWidth={1.75} aria-hidden="true" />
                   Export JSON
@@ -638,7 +641,7 @@ export function BenchmarkCenter() {
               aria-checked={logScale}
               onClick={() => setLogScale((value) => !value)}
               className={cn(
-                "rounded-md border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors",
+                "inline-flex min-h-10 items-center justify-center rounded-md border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors",
                 logScale
                   ? "border-accent/60 bg-surface-2 text-accent"
                   : "border-line bg-surface text-ink-muted hover:text-ink",

@@ -233,7 +233,7 @@ export function RecursionVisualizer() {
             />
             <button
               type="submit"
-              className="flex h-9 shrink-0 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+              className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
             >
               <Sigma size={14} strokeWidth={1.75} aria-hidden="true" />
               Run
@@ -284,6 +284,8 @@ export function RecursionVisualizer() {
                   if (inputError) setInputError(null);
                 }}
                 placeholder="7"
+                aria-invalid={inputError ? true : undefined}
+                aria-describedby={inputError ? "recursion-input-error" : "recursion-input-hint"}
                 className="mt-2 min-w-0 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60"
               />
             </div>
@@ -291,7 +293,7 @@ export function RecursionVisualizer() {
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <button
               type="submit"
-              className="flex h-9 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+              className="flex h-10 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
             >
               Run
             </button>
@@ -325,7 +327,7 @@ export function RecursionVisualizer() {
           />
           <button
             type="submit"
-            className="flex h-9 shrink-0 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+            className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
           >
             Build &amp; traverse
           </button>
@@ -592,7 +594,11 @@ export function RecursionVisualizer() {
             <h2 id="recursion-step-heading" className="label">
               Current step
             </h2>
-            <p className="mt-3 min-h-[4.5rem] text-[13px] leading-relaxed text-ink">
+            <p
+              className="mt-3 min-h-[4.5rem] text-[13px] leading-relaxed text-ink"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               {step?.description ??
                 (refused
                   ? "Nothing ran — the input was refused before any call was made."

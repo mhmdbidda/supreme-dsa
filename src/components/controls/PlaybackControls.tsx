@@ -20,7 +20,7 @@ type PlaybackControlsProps = {
 };
 
 const BUTTON_CLASS =
-  "flex h-9 w-9 items-center justify-center rounded-md border border-line bg-surface-2 text-ink transition-colors hover:border-white/20 hover:bg-[#1c1c1c] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line disabled:hover:bg-surface-2";
+  "flex h-10 w-10 items-center justify-center rounded-md border border-line bg-surface-2 text-ink transition-colors hover:border-white/20 hover:bg-[#1c1c1c] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line disabled:hover:bg-surface-2";
 
 /** Play / Pause / Next / Previous / Reset plus the speed slider. */
 export function PlaybackControls({
@@ -58,7 +58,7 @@ export function PlaybackControls({
           title={playing ? "Pause" : "Play"}
           className={cn(
             BUTTON_CLASS,
-            "h-9 w-16 gap-2 border-accent/50 text-accent disabled:border-line disabled:text-ink",
+            "h-10 w-16 gap-2 border-accent/50 text-accent disabled:border-line disabled:text-ink",
           )}
         >
           {playing ? (

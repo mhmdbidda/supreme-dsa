@@ -140,7 +140,7 @@ export function SortingLab() {
           comparedIndices: sortStep?.comparedIndices,
           sortedIndices: sortStep?.sortedIndices,
           dimRange: null,
-          ariaLabel: sortStep?.description ?? "Sorting visualization",
+          ariaLabel: `Bar chart of ${array.length} values, step ${playback.index + 1} of ${sortSteps.length}`,
         }
       : {
           array: searchStep?.array ?? array,
@@ -152,7 +152,7 @@ export function SortingLab() {
             searchLow !== undefined && searchHigh !== undefined
               ? { low: searchLow, high: searchHigh }
               : null,
-          ariaLabel: searchStep?.description ?? "Searching visualization",
+          ariaLabel: `Bar chart of ${array.length} values, step ${playback.index + 1} of ${searchSteps.length}`,
         };
 
   const stepDescription =
@@ -305,7 +305,7 @@ export function SortingLab() {
                 <button
                   type="button"
                   onClick={() => generateRandom(size)}
-                  className="flex h-9 items-center justify-center gap-2 rounded-md border border-line bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-ink transition-colors hover:border-white/20 hover:bg-[#1c1c1c]"
+                  className="flex h-10 items-center justify-center gap-2 rounded-md border border-line bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-ink transition-colors hover:border-white/20 hover:bg-[#1c1c1c]"
                 >
                   <Shuffle size={14} strokeWidth={1.75} aria-hidden="true" />
                   Generate random
@@ -315,7 +315,7 @@ export function SortingLab() {
                   onClick={handleClear}
                   disabled={isEmpty}
                   title="Reset the array to nothing"
-                  className="flex h-9 items-center justify-center rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex h-10 items-center justify-center rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Clear
                 </button>
@@ -355,7 +355,7 @@ export function SortingLab() {
                 />
                 <button
                   type="submit"
-                  className="h-9 shrink-0 rounded-md border border-line bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-ink transition-colors hover:border-white/20 hover:bg-[#1c1c1c]"
+                  className="h-10 shrink-0 rounded-md border border-line bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-ink transition-colors hover:border-white/20 hover:bg-[#1c1c1c]"
                 >
                   Apply
                 </button>
@@ -409,7 +409,7 @@ export function SortingLab() {
                   />
                   <button
                     type="submit"
-                    className="flex h-9 shrink-0 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+                    className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
                   >
                     <Search size={14} strokeWidth={1.75} aria-hidden="true" />
                     Search
@@ -450,7 +450,7 @@ export function SortingLab() {
                   <button
                     type="button"
                     onClick={handleSortCopyAndSearch}
-                    className="flex h-9 shrink-0 items-center gap-2 rounded-md border border-accent/60 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+                    className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-accent/60 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
                   >
                     Sort a copy and search
                   </button>
@@ -492,7 +492,7 @@ export function SortingLab() {
                   <button
                     type="button"
                     onClick={() => generateRandom(size)}
-                    className="mt-1 flex h-9 items-center gap-2 rounded-md border border-accent/50 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-surface-2"
+                    className="mt-1 flex h-10 items-center gap-2 rounded-md border border-accent/50 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-surface-2"
                   >
                     <Shuffle size={14} strokeWidth={1.75} aria-hidden="true" />
                     Generate random
@@ -639,7 +639,11 @@ export function SortingLab() {
             <h2 id="description-heading" className="label">
               Current step
             </h2>
-            <p className="mt-3 min-h-[4.5rem] text-[13px] leading-relaxed text-ink">
+            <p
+              className="mt-3 min-h-[4.5rem] text-[13px] leading-relaxed text-ink"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               {stepDescription}
             </p>
           </section>

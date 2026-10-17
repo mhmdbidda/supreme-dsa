@@ -11,13 +11,16 @@ import {
 } from "lucide-react";
 import { RecentExperiments } from "@/components/RecentExperiments";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description:
+    "The DSA Command Center dashboard: jump into sorting, data structures, trees, graphs and complexity, and reopen recent benchmark experiments.",
+};
 
 type Module = {
   href: string;
   title: string;
   description: string;
-  status: "Ready" | "Coming next";
   icon: LucideIcon;
 };
 
@@ -27,7 +30,6 @@ const MODULES: Module[] = [
     title: "Sorting & Searching",
     description:
       "Step through comparisons, swaps and merges with live counters and complexity cards.",
-    status: "Ready",
     icon: ArrowUpDown,
   },
   {
@@ -35,7 +37,6 @@ const MODULES: Module[] = [
     title: "Data Structures",
     description:
       "Push, pop, enqueue and insert on stacks, queues and linked lists, with every pointer redrawn per step.",
-    status: "Ready",
     icon: Database,
   },
   {
@@ -43,7 +44,6 @@ const MODULES: Module[] = [
     title: "Trees",
     description:
       "Binary search trees, traversals and heaps, drawn node by node.",
-    status: "Coming next",
     icon: GitBranch,
   },
   {
@@ -51,7 +51,6 @@ const MODULES: Module[] = [
     title: "Graphs",
     description:
       "BFS, DFS and shortest paths over adjacency lists and matrices.",
-    status: "Coming next",
     icon: Network,
   },
   {
@@ -59,26 +58,16 @@ const MODULES: Module[] = [
     title: "Complexity",
     description:
       "A recursion visualizer with live call stacks, plus a benchmark center measuring sorting and searching as n grows.",
-    status: "Ready",
     icon: Gauge,
   },
 ];
 
-function StatusBadge({ status }: { status: Module["status"] }) {
-  const ready = status === "Ready";
+/** Every module on the dashboard is built; this is the single "Ready" chip. */
+function ReadyBadge() {
   return (
-    <span
-      className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] ${
-        ready
-          ? "border-sorted/50 bg-surface-2 text-sorted"
-          : "border-line bg-surface-2 text-ink-muted"
-      }`}
-    >
-      <span
-        className={`h-1.5 w-1.5 rounded-full ${ready ? "bg-sorted" : "bg-ink-muted"}`}
-        aria-hidden="true"
-      />
-      {status}
+    <span className="flex items-center gap-1.5 rounded-full border border-sorted/50 bg-surface-2 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-sorted">
+      <span className="h-1.5 w-1.5 rounded-full bg-sorted" aria-hidden="true" />
+      Ready
     </span>
   );
 }
@@ -102,14 +91,14 @@ export default function DashboardPage() {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/sorting"
-            className="flex h-9 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+            className="flex h-10 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
           >
             Open Sorting Lab
             <ArrowRight size={14} strokeWidth={1.75} aria-hidden="true" />
           </Link>
           <Link
             href="/about"
-            className="flex h-9 items-center rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink"
+            className="flex h-10 items-center rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink"
           >
             About the project
           </Link>
@@ -122,7 +111,7 @@ export default function DashboardPage() {
             Modules
           </h2>
           <span className="font-mono text-[11px] text-ink-muted">
-            3 ready · 2 coming next
+            5 modules ready
           </span>
         </div>
 
@@ -139,7 +128,7 @@ export default function DashboardPage() {
                     <span className="flex h-9 w-9 items-center justify-center rounded-md border border-line bg-surface-2 text-ink-muted transition-colors group-hover:text-accent">
                       <Icon size={17} strokeWidth={1.75} aria-hidden="true" />
                     </span>
-                    <StatusBadge status={module.status} />
+                    <ReadyBadge />
                   </div>
                   <h3 className="text-[15px] font-medium tracking-tight text-ink">
                     {module.title}

@@ -190,9 +190,34 @@ export function TreeVisualizer({
                   ? PALETTE.dimText
                   : PALETTE.defaultText;
 
+          // Shape cues so state never relies on colour alone: the found node
+          // gets an extra ring and a bold stroke, the current node a bold
+          // stroke, visited nodes a dashed stroke.
+          const strokeWidth =
+            tone === "found" ? 2.5 : tone === "accent" ? 2 : 1;
+          const strokeDasharray = tone === "dim" ? "2 2" : undefined;
+
           return (
             <g key={`${node.depth}-${node.x}-${node.value}`}>
-              <circle cx={node.x} cy={node.y} r={NODE_RADIUS} fill={fill} stroke={stroke} strokeWidth={1} />
+              {tone === "found" ? (
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r={NODE_RADIUS + 4}
+                  fill="none"
+                  stroke={PALETTE.foundStroke}
+                  strokeWidth={1}
+                />
+              ) : null}
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r={NODE_RADIUS}
+                fill={fill}
+                stroke={stroke}
+                strokeWidth={strokeWidth}
+                strokeDasharray={strokeDasharray}
+              />
               <text
                 x={node.x}
                 y={node.y}

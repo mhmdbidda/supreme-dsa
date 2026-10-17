@@ -18,15 +18,15 @@ export function TopBar({ title, path, menuOpen, onOpenMenu }: TopBarProps) {
         aria-label="Open navigation menu"
         aria-expanded={menuOpen}
         aria-controls="sidebar"
-        className="rounded-md border border-line bg-surface-2 p-2 text-ink-muted transition-colors hover:text-ink lg:hidden"
+        className="flex h-10 w-10 items-center justify-center rounded-md border border-line bg-surface-2 text-ink-muted transition-colors hover:text-ink lg:hidden"
       >
         <Menu size={16} strokeWidth={1.75} aria-hidden="true" />
       </button>
 
       <div className="flex min-w-0 items-baseline gap-3">
-        <h1 className="truncate text-sm font-medium tracking-tight text-ink">
+        <p className="truncate text-sm font-medium tracking-tight text-ink">
           {title}
-        </h1>
+        </p>
         <span className="hidden truncate font-mono text-[11px] text-ink-muted sm:inline">
           {path}
         </span>

@@ -41,6 +41,8 @@ export type GraphCanvasProps = {
   tool: GraphTool;
   /** Shown centred over the canvas while the graph has no vertices. */
   emptyMessage: string;
+  /** Overrides the default canvas text alternative (e.g. to include the step). */
+  ariaLabel?: string;
   onVertexClick: (id: number) => void;
   onEdgeClick: (from: number, to: number) => void;
   onBackgroundClick: (point: GraphPoint) => void;
@@ -71,6 +73,9 @@ type ToneStyle = {
   fill: string;
   stroke: string;
   text: string;
+  strokeWidth: number;
+  /** Dashed outline so tone never relies on colour alone. */
+  dashArray?: string;
 };
 
 const TONES: Record<GraphTone, ToneStyle> = {
@@ -78,21 +83,26 @@ const TONES: Record<GraphTone, ToneStyle> = {
     fill: PALETTE.defaultFill,
     stroke: PALETTE.defaultStroke,
     text: PALETTE.defaultText,
+    strokeWidth: 1.2,
   },
   accent: {
     fill: PALETTE.accentFill,
     stroke: PALETTE.accentStroke,
     text: PALETTE.accentText,
+    strokeWidth: 2.4,
   },
   frontier: {
     fill: PALETTE.frontierFill,
     stroke: PALETTE.frontierStroke,
     text: PALETTE.frontierText,
+    strokeWidth: 1.6,
+    dashArray: "4 3",
   },
   visited: {
     fill: PALETTE.visitedFill,
     stroke: PALETTE.visitedStroke,
     text: PALETTE.visitedText,
+    strokeWidth: 1.9,
   },
 };
 
@@ -154,6 +164,7 @@ export function GraphCanvas({
   pendingFrom,
   tool,
   emptyMessage,
+  ariaLabel,
   onVertexClick,
   onEdgeClick,
   onBackgroundClick,
@@ -264,7 +275,9 @@ export function GraphCanvas({
         ref={svgRef}
         viewBox={`0 0 ${GRAPH_VIEW_WIDTH} ${GRAPH_VIEW_HEIGHT}`}
         role="img"
-        aria-label={`Graph with ${vertices.length} vertices and ${edges.length} edges`}
+        aria-label={
+          ariaLabel ?? `Graph with ${vertices.length} vertices and ${edges.length} edges`
+        }
         className={`block h-auto w-full touch-none select-none ${cursor}`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -391,7 +404,8 @@ export function GraphCanvas({
                 r={NODE_RADIUS}
                 fill={tone.fill}
                 stroke={tone.stroke}
-                strokeWidth={pending ? 2 : 1.2}
+                strokeWidth={pending ? 2 : tone.strokeWidth}
+                strokeDasharray={tone.dashArray}
               />
               <text
                 x={position.x}

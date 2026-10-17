@@ -69,7 +69,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             type="button"
             onClick={onClose}
             aria-label="Close navigation menu"
-            className="rounded-md border border-line bg-surface-2 p-1.5 text-ink-muted transition-colors hover:text-ink lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-md border border-line bg-surface-2 text-ink-muted transition-colors hover:text-ink lg:hidden"
           >
             <X size={16} strokeWidth={1.75} aria-hidden="true" />
           </button>
@@ -85,7 +85,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 onClick={onClose}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-md border-l-2 px-3 py-2 text-[13px] tracking-tight transition-colors",
+                  "flex min-h-10 items-center gap-3 rounded-md border-l-2 px-3 py-2 text-[13px] tracking-tight transition-colors",
                   active
                     ? "border-accent bg-surface-2 text-ink"
                     : "border-transparent text-ink-muted hover:bg-surface-2 hover:text-ink",

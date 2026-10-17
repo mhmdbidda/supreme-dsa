@@ -221,7 +221,11 @@ function StructurePanel({
           ) : null}
 
           {fieldError !== null ? (
-            <p role="alert" className="mt-2 font-mono text-[11px] tracking-tight text-accent">
+            <p
+              id={inputHintId}
+              role="alert"
+              className="mt-2 font-mono text-[11px] tracking-tight text-accent"
+            >
               {fieldError}
             </p>
           ) : hasInputs ? (
@@ -240,7 +244,7 @@ function StructurePanel({
                 onClick={() => runOperation(op)}
                 disabled={op.disabledWhenEmpty === true && items.length === 0}
                 className={cn(
-                  "flex h-9 items-center justify-center rounded-md border px-4 text-[12px] font-medium tracking-tight transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                  "flex h-10 items-center justify-center rounded-md border px-4 text-[12px] font-medium tracking-tight transition-colors disabled:cursor-not-allowed disabled:opacity-40",
                   op.tone === "accent"
                     ? "border-accent/60 bg-surface-2 text-accent hover:bg-[#1c1c1c]"
                     : "border-line bg-surface text-ink-muted hover:border-white/20 hover:text-ink",
@@ -350,7 +354,11 @@ function StructurePanel({
           <h2 id={`${meta.id}-step-heading`} className="label">
             Current step
           </h2>
-          <p className="mt-3 min-h-[4.5rem] text-[13px] leading-relaxed text-ink">
+          <p
+            className="mt-3 min-h-[4.5rem] text-[13px] leading-relaxed text-ink"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {step?.description ??
               "Run an operation to generate its step stream, then play it back here."}
           </p>

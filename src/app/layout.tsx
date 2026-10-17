@@ -15,13 +15,36 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+/**
+ * Canonical origin used to resolve absolute URLs in Open Graph metadata.
+ * Override with `NEXT_PUBLIC_SITE_URL` when deploying to a real domain.
+ */
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://dsa-command-center.vercel.app";
+
+const DESCRIPTION =
+  "An interactive visual lab for Data Structures and Algorithms (CS 214): sorting, searching, data structures, trees, graphs and complexity, all running in the browser.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "DSA Command Center",
     template: "%s · DSA Command Center",
   },
-  description:
-    "An interactive visual lab for Data Structures and Algorithms (CS 214).",
+  description: DESCRIPTION,
+  applicationName: "DSA Command Center",
+  openGraph: {
+    type: "website",
+    siteName: "DSA Command Center",
+    title: "DSA Command Center",
+    description: DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    card: "summary",
+    title: "DSA Command Center",
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

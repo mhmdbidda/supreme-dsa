@@ -105,30 +105,43 @@ body {
   font-size: 13px;
 }
 
-/* Compact range sliders that match the palette. */
+/* Compact range sliders that match the palette. The input itself is a 40px
+   touch target; the visible track stays a thin 6px line and the thumb 22px. */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 4px;
+  height: 40px;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
   border-radius: 999px;
   background-color: #262626;
-  cursor: pointer;
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
   border-radius: 50%;
   background-color: #ededed;
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background-color: #262626;
+}
+
 input[type="range"]::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background-color: #ededed;
   border: 1px solid rgba(255, 255, 255, 0.4);

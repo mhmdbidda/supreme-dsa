@@ -43,7 +43,7 @@ const WEIGHT_OPTIONS: ReadonlyArray<{ value: "on" | "off"; label: string }> = [
 ];
 
 const TOOL_BUTTON_CLASS =
-  "flex h-9 items-center gap-2 rounded-md border border-line bg-surface-2 px-3 font-mono text-[11px] uppercase tracking-[0.1em] text-ink transition-colors hover:border-white/20 hover:bg-[#1c1c1c] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line disabled:hover:bg-surface-2";
+  "flex h-10 items-center gap-2 rounded-md border border-line bg-surface-2 px-3 font-mono text-[11px] uppercase tracking-[0.1em] text-ink transition-colors hover:border-white/20 hover:bg-[#1c1c1c] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line disabled:hover:bg-surface-2";
 
 const INPUT_CLASS =
   "w-full rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60";
@@ -473,6 +473,9 @@ export function GraphStudio() {
   const canvasEdges: GraphCanvasEdge[] = edges;
 
   const fieldHintId = "graph-field-hint";
+  const fieldErrorId = "graph-field-error";
+  const fieldDescribedBy =
+    fieldError !== null ? `${fieldHintId} ${fieldErrorId}` : fieldHintId;
   const traversalDisabled = vertices.length === 0 || selectedStart === null;
 
   return (
@@ -601,6 +604,11 @@ export function GraphStudio() {
                 pendingFrom={pendingFrom}
                 tool={tool}
                 emptyMessage={meta.emptyMessage}
+                ariaLabel={
+                  steps.length === 0
+                    ? undefined
+                    : `Graph with ${vertices.length} vertices and ${edges.length} edges, step ${playback.index + 1} of ${steps.length}`
+                }
                 onVertexClick={handleVertexClick}
                 onEdgeClick={handleEdgeClick}
                 onBackgroundClick={handleBackgroundClick}
@@ -675,7 +683,7 @@ export function GraphStudio() {
                       autoComplete="off"
                       value={vertexInput}
                       placeholder="7"
-                      aria-describedby={fieldHintId}
+                      aria-describedby={fieldDescribedBy}
                       onChange={(event) => {
                         setVertexInput(event.target.value);
                         if (fieldError) setFieldError(null);
@@ -704,7 +712,7 @@ export function GraphStudio() {
                       autoComplete="off"
                       value={edgeFrom}
                       placeholder="from"
-                      aria-describedby={fieldHintId}
+                      aria-describedby={fieldDescribedBy}
                       onChange={(event) => {
                         setEdgeFrom(event.target.value);
                         if (fieldError) setFieldError(null);
@@ -723,7 +731,7 @@ export function GraphStudio() {
                       autoComplete="off"
                       value={edgeTo}
                       placeholder="to"
-                      aria-describedby={fieldHintId}
+                      aria-describedby={fieldDescribedBy}
                       onChange={(event) => {
                         setEdgeTo(event.target.value);
                         if (fieldError) setFieldError(null);
@@ -739,11 +747,16 @@ export function GraphStudio() {
               </div>
             </div>
 
+            <p id={fieldHintId} className="mt-3 text-[11px] leading-relaxed text-ink-muted">
+              Vertex ids and edge endpoints are whole numbers, 0 or greater. Edge weights come
+              from the weight field above.
+            </p>
+
             {fieldError !== null ? (
               <p
-                id={fieldHintId}
+                id={fieldErrorId}
                 role="alert"
-                className="mt-3 font-mono text-[11px] tracking-tight text-accent"
+                className="mt-2 font-mono text-[11px] tracking-tight text-accent"
               >
                 {fieldError}
               </p>
@@ -963,7 +976,11 @@ export function GraphStudio() {
             <h2 id="graph-step-heading" className="label">
               Current step
             </h2>
-            <p className="mt-3 min-h-[4.5rem] text-[13px] leading-relaxed text-ink">
+            <p
+              className="mt-3 min-h-[4.5rem] text-[13px] leading-relaxed text-ink"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               {currentStep?.description ??
                 "Run a traversal to generate its step stream, then play it back here."}
             </p>

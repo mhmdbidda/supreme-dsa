@@ -68,7 +68,7 @@ export function RecentExperiments(props: RecentExperimentsProps) {
           </p>
           <Link
             href="/complexity"
-            className="mt-1 flex h-9 items-center gap-2 rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink transition-colors hover:border-white/20"
+            className="mt-1 flex h-10 items-center gap-2 rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink transition-colors hover:border-white/20"
           >
             <Clock3 size={14} strokeWidth={1.75} aria-hidden="true" />
             {props.variant === "dashboard"
@@ -95,7 +95,7 @@ export function RecentExperiments(props: RecentExperimentsProps) {
               {props.variant === "dashboard" ? (
                 <Link
                   href={`/complexity?run=${encodeURIComponent(run.id)}`}
-                  className="flex h-8 shrink-0 items-center gap-2 rounded-md border border-accent/50 px-3 text-[11px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+                  className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-accent/50 px-3 text-[11px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
                 >
                   <RotateCcw size={13} strokeWidth={1.75} aria-hidden="true" />
                   Reopen
@@ -105,7 +105,7 @@ export function RecentExperiments(props: RecentExperimentsProps) {
                   <button
                     type="button"
                     onClick={() => props.onReopen(run)}
-                    className="flex h-8 items-center gap-2 rounded-md border border-accent/50 px-3 text-[11px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+                    className="flex h-10 items-center gap-2 rounded-md border border-accent/50 px-3 text-[11px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
                   >
                     <RotateCcw size={13} strokeWidth={1.75} aria-hidden="true" />
                     Reopen
@@ -115,7 +115,7 @@ export function RecentExperiments(props: RecentExperimentsProps) {
                     onClick={() => props.onForget(run.id)}
                     aria-label={`Forget run from ${new Date(run.createdAt).toLocaleString()}`}
                     title="Forget this run"
-                    className="flex h-8 w-8 items-center justify-center rounded-md border border-line text-ink-muted transition-colors hover:text-ink"
+                    className="flex h-10 w-10 items-center justify-center rounded-md border border-line text-ink-muted transition-colors hover:text-ink"
                   >
                     <Trash2 size={13} strokeWidth={1.75} aria-hidden="true" />
                   </button>
