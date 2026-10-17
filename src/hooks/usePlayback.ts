@@ -69,9 +69,11 @@ export function playbackReducer(
 ): PlaybackState {
   switch (action.type) {
     case "play": {
-      // Playing is only meaningful while there is a next step to show.
       if (action.total <= 0) return state;
-      if (clampIndex(state.index, action.total) >= action.total - 1) return state;
+      const index = clampIndex(state.index, action.total);
+      // At the last step there is nothing ahead: restart from step 0 and
+      // play, so Play is never a dead button.
+      if (index >= action.total - 1) return { ...state, index: 0, playing: true };
       return { ...state, playing: true };
     }
     case "pause":
@@ -111,7 +113,8 @@ export function playbackReducer(
  * Plays back a generated list of steps.
  * - the index can never leave `[0, steps.length - 1]`,
  * - any change to the step list (new array, new algorithm) resets playback,
- * - autoplay stops automatically on the last step.
+ * - autoplay stops automatically on the last step, and pressing play there
+ *   restarts the stream from step 0.
  */
 export function usePlayback<T>(steps: readonly T[]) {
   const totalSteps = steps.length;

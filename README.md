@@ -50,6 +50,19 @@ comparison, swap, write, pointer change, visit and call is documented per algori
 The short version: counters are deterministic for a given input, so comparison counts are
 exact; wall-clock timings are not, and they never prove Big-O.
 
+## Benchmark method
+
+The benchmark runs on the **main thread** (no Web Workers): every timed trial blocks the
+browser's single JS thread, and `runBenchmark` yields back to it (`setTimeout(0)`) between
+trials so the page can repaint and stay responsive. Those yields — plus whatever else the
+browser is doing — are part of every measurement, which is another reason the timings are
+indicative and never proof of Big-O.
+
+That is also why the size presets are capped: `PRESET_SIZES` stops at 2 000 values and
+`MAX_BENCHMARK_SIZE` at 5 000. A single O(n²) trial over a much larger input would freeze
+the tab for seconds between two yields, and past a few thousand values the noise from GC
+and background browser work swamps any difference the chart could show.
+
 ## Getting started
 
 Requires **Node 20** (see [`.nvmrc`](.nvmrc)).

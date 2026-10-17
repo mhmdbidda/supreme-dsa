@@ -53,9 +53,9 @@ export function PlaybackControls({
         <button
           type="button"
           onClick={playing ? onPause : onPlay}
-          disabled={disabled || (!playing && atEnd)}
+          disabled={disabled}
           aria-label={playing ? "Pause" : "Play"}
-          title={playing ? "Pause" : "Play"}
+          title={playing ? "Pause" : "Play — restarts from the first step at the end"}
           className={cn(
             BUTTON_CLASS,
             "h-10 w-16 gap-2 border-accent/50 text-accent disabled:border-line disabled:text-ink",

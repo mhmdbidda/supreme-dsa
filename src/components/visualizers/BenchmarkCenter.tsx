@@ -385,8 +385,8 @@ export function BenchmarkCenter() {
       ) : null}
 
       {/* The honesty note — deliberately above the fold of the results. */}
-      <div
-        role="note"
+      <section
+        aria-label="How to read these timings"
         className="panel flex items-start gap-3 border-accent/40 p-5"
       >
         <TriangleAlert
@@ -396,7 +396,7 @@ export function BenchmarkCenter() {
           aria-hidden="true"
         />
         <p className="text-[13px] leading-relaxed text-ink">{BENCHMARK_NOTE}</p>
-      </div>
+      </section>
 
       <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 space-y-5">

@@ -87,7 +87,9 @@ const PALETTE = {
   accentText: "#f2b544",
   foundFill: "rgba(85, 128, 95, 0.18)",
   foundStroke: "rgba(85, 128, 95, 0.85)",
-  foundText: "#55805f",
+  // Lightened from the bar green (#55805f) so the value text clears 4.5:1
+  // against the found fill (5.5:1) — small text needs AA contrast.
+  foundText: "#76a37f",
 } as const;
 
 type Tone = "default" | "dim" | "accent" | "found";

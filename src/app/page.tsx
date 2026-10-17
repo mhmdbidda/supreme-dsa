@@ -43,14 +43,14 @@ const MODULES: Module[] = [
     href: "/trees",
     title: "Trees",
     description:
-      "Binary search trees, traversals and heaps, drawn node by node.",
+      "Binary search trees with insert, search and delete, plus traversals, drawn node by node.",
     icon: GitBranch,
   },
   {
     href: "/graphs",
     title: "Graphs",
     description:
-      "BFS, DFS and shortest paths over adjacency lists and matrices.",
+      "BFS, DFS and BFS distances over adjacency lists and matrices.",
     icon: Network,
   },
   {

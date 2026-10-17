@@ -340,8 +340,6 @@ describe("VisualBST · height, node count and clear", () => {
   it("reports 0 for the empty tree", () => {
     const tree = new VisualBST();
 
-    expect(tree.height().result).toBe(0);
-    expect(tree.nodeCount().result).toBe(0);
     expect(tree.measureHeight()).toBe(0);
     expect(tree.countNodes()).toBe(0);
   });
@@ -350,23 +348,15 @@ describe("VisualBST · height, node count and clear", () => {
     const tree = new VisualBST();
     tree.insert(5);
 
-    const height = tree.height();
-    const count = tree.nodeCount();
-    expect(height.result).toBe(1);
-    expect(count.result).toBe(1);
-    expectConsistentTreeOutcome(height, tree);
-    expectConsistentTreeOutcome(count, tree);
+    expect(tree.measureHeight()).toBe(1);
+    expect(tree.countNodes()).toBe(1);
   });
 
   it("reports height 3 and 7 nodes for the sample tree", () => {
     const tree = buildSample();
 
-    expect(tree.height().result).toBe(3);
-    expect(tree.nodeCount().result).toBe(7);
     expect(tree.measureHeight()).toBe(3);
     expect(tree.countNodes()).toBe(7);
-    expectConsistentTreeOutcome(tree.height(), tree);
-    expectConsistentTreeOutcome(tree.nodeCount(), tree);
   });
 
   it("counts a skewed tree as tall as it is wide", () => {
@@ -428,8 +418,6 @@ describe("VisualBST · ordering and snapshot integrity", () => {
       () => tree.inorder(),
       () => tree.preorder(),
       () => tree.postorder(),
-      () => tree.height(),
-      () => tree.nodeCount(),
       () => tree.clear(),
     ];
     for (const run of checks) {

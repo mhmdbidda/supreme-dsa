@@ -1,6 +1,6 @@
 "use client";
 
-import { Eraser, Plus, Share2, Sparkles, TriangleAlert } from "lucide-react";
+import { Eraser, Plus, Share2, Sparkles, Trash2, TriangleAlert } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   Graph,
@@ -228,6 +228,14 @@ export function GraphStudio() {
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [operationError, setOperationError] = useState<string | null>(null);
 
+  // Keyboard-operable delete forms (the canvas tools are pointer-only).
+  const [deleteVertexInput, setDeleteVertexInput] = useState("");
+  const [deleteFromInput, setDeleteFromInput] = useState("");
+  const [deleteToInput, setDeleteToInput] = useState("");
+  const [deleteVertexError, setDeleteVertexError] = useState<string | null>(null);
+  const [deleteEdgeError, setDeleteEdgeError] = useState<string | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<string | null>(null);
+
   const playback = usePlayback(steps);
   const currentStep = steps.at(playback.index) ?? null;
 
@@ -253,23 +261,6 @@ export function GraphStudio() {
 
   const nextVertexId = () =>
     vertices.length === 0 ? 0 : Math.max(...vertices) + 1;
-
-  const promptWeight = (from: number, to: number): number | null => {
-    const fallback = weightInput.trim() === "" ? "1" : weightInput.trim();
-    if (typeof window === "undefined" || typeof window.prompt !== "function") {
-      const value = Number(fallback);
-      return Number.isFinite(value) ? value : 1;
-    }
-    const answer = window.prompt(`Weight for edge ${from} → ${to}`, fallback);
-    if (answer === null) return null;
-    const value = Number(answer.trim());
-    if (answer.trim() === "" || !Number.isFinite(value)) {
-      setOperationError(`"${answer}" is not a valid weight — the edge was not added.`);
-      return null;
-    }
-    setWeightInput(String(value));
-    return value;
-  };
 
   // ------------------------------------------------------------ canvas ops --
 
@@ -315,9 +306,13 @@ export function GraphStudio() {
       setPendingFrom(null);
       let weight = 1;
       if (graph.isWeighted()) {
-        const prompted = promptWeight(from, id);
-        if (prompted === null) return;
-        weight = prompted;
+        // The weight comes from the shared weight field — no blocking prompt.
+        const parsed = parseSingleNumber(weightInput);
+        if (!parsed.ok) {
+          setOperationError(parsed.error);
+          return;
+        }
+        weight = parsed.value;
       }
       const outcome = graph.addEdge(from, id, weight);
       if (!outcome.ok) {
@@ -445,6 +440,56 @@ export function GraphStudio() {
     acceptEdit();
   };
 
+  const deleteVertexById = () => {
+    const id = parseVertexId(deleteVertexInput);
+    if (id === null) {
+      setDeleteVertexError("A vertex id must be a whole number, 0 or greater.");
+      setDeleteConfirmation(null);
+      setOperationError(null);
+      return;
+    }
+    const outcome = graph.removeVertex(id);
+    if (!outcome.ok) {
+      // Show the engine's refusal next to the field that caused it.
+      setDeleteVertexError(outcome.error ?? "The vertex was not deleted.");
+      setDeleteConfirmation(null);
+      setOperationError(null);
+      return;
+    }
+    setPositions((previous) => {
+      const next = new Map(previous);
+      next.delete(id);
+      return next;
+    });
+    setDeleteVertexInput("");
+    setDeleteVertexError(null);
+    setDeleteConfirmation(`Deleted vertex ${id} and every edge that touched it.`);
+    acceptEdit();
+  };
+
+  const deleteEdgeById = () => {
+    const from = parseVertexId(deleteFromInput);
+    const to = parseVertexId(deleteToInput);
+    if (from === null || to === null) {
+      setDeleteEdgeError("Edge endpoints must be whole-number vertex ids.");
+      setDeleteConfirmation(null);
+      setOperationError(null);
+      return;
+    }
+    const outcome = graph.removeEdge(from, to);
+    if (!outcome.ok) {
+      setDeleteEdgeError(outcome.error ?? "The edge was not deleted.");
+      setDeleteConfirmation(null);
+      setOperationError(null);
+      return;
+    }
+    setDeleteFromInput("");
+    setDeleteToInput("");
+    setDeleteEdgeError(null);
+    setDeleteConfirmation(`Deleted edge ${from} → ${to}.`);
+    acceptEdit();
+  };
+
   // ------------------------------------------------------------ traversal --
 
   const runTraversal = () => {
@@ -501,6 +546,15 @@ export function GraphStudio() {
   const fieldErrorId = "graph-field-error";
   const fieldDescribedBy =
     fieldError !== null ? `${fieldHintId} ${fieldErrorId}` : fieldHintId;
+  const deleteVertexErrorId = "graph-delete-vertex-error";
+  const deleteEdgeErrorId = "graph-delete-edge-error";
+  const deleteVertexDescribedBy =
+    deleteVertexError !== null
+      ? `${fieldHintId} ${deleteVertexErrorId}`
+      : fieldHintId;
+  const deleteEdgeDescribedBy =
+    deleteEdgeError !== null ? `${fieldHintId} ${deleteEdgeErrorId}` : fieldHintId;
+  const deleteConfirmId = "graph-delete-confirm";
   const traversalDisabled = vertices.length === 0 || selectedStart === null;
 
   return (
@@ -611,7 +665,7 @@ export function GraphStudio() {
             <p className="mt-3 text-[11px] leading-relaxed text-ink-muted">
               {tool === "edge"
                 ? pendingFrom === null
-                  ? "Add edge: click vertex A, then vertex B. Weighted mode prompts for a weight."
+                  ? "Add edge: click vertex A, then vertex B. In weighted mode the weight comes from the weight field above."
                   : `Edge from vertex ${pendingFrom} — click the destination vertex (click empty space to cancel).`
                 : tool === "delete"
                   ? "Delete: click a vertex to remove it and its edges, or click an edge to remove just that edge."
@@ -770,7 +824,120 @@ export function GraphStudio() {
                   </button>
                 </div>
               </div>
+
+              <div>
+                <p className="label mb-2">Delete vertex by id</p>
+                <div className="flex items-end gap-2">
+                  <div className="w-24">
+                    <label htmlFor="graph-delete-vertex-id" className="sr-only">
+                      Vertex id to delete
+                    </label>
+                    <input
+                      id="graph-delete-vertex-id"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      value={deleteVertexInput}
+                      placeholder="7"
+                      aria-describedby={deleteVertexDescribedBy}
+                      onChange={(event) => {
+                        setDeleteVertexInput(event.target.value);
+                        if (deleteVertexError) setDeleteVertexError(null);
+                      }}
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={deleteVertexById}
+                    className={TOOL_BUTTON_CLASS}
+                  >
+                    <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" />
+                    Delete
+                  </button>
+                </div>
+                {deleteVertexError !== null ? (
+                  <p
+                    id={deleteVertexErrorId}
+                    role="alert"
+                    className="mt-2 font-mono text-[11px] tracking-tight text-accent"
+                  >
+                    {deleteVertexError}
+                  </p>
+                ) : null}
+              </div>
+
+              <div>
+                <p className="label mb-2">Delete edge from-to</p>
+                <div className="flex flex-wrap items-end gap-2">
+                  <div className="w-20">
+                    <label htmlFor="graph-delete-edge-from" className="sr-only">
+                      From vertex of the edge to delete
+                    </label>
+                    <input
+                      id="graph-delete-edge-from"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      value={deleteFromInput}
+                      placeholder="from"
+                      aria-describedby={deleteEdgeDescribedBy}
+                      onChange={(event) => {
+                        setDeleteFromInput(event.target.value);
+                        if (deleteEdgeError) setDeleteEdgeError(null);
+                      }}
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+                  <div className="w-20">
+                    <label htmlFor="graph-delete-edge-to" className="sr-only">
+                      To vertex of the edge to delete
+                    </label>
+                    <input
+                      id="graph-delete-edge-to"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      value={deleteToInput}
+                      placeholder="to"
+                      aria-describedby={deleteEdgeDescribedBy}
+                      onChange={(event) => {
+                        setDeleteToInput(event.target.value);
+                        if (deleteEdgeError) setDeleteEdgeError(null);
+                      }}
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={deleteEdgeById}
+                    className={TOOL_BUTTON_CLASS}
+                  >
+                    <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" />
+                    Delete edge
+                  </button>
+                </div>
+                {deleteEdgeError !== null ? (
+                  <p
+                    id={deleteEdgeErrorId}
+                    role="alert"
+                    className="mt-2 font-mono text-[11px] tracking-tight text-accent"
+                  >
+                    {deleteEdgeError}
+                  </p>
+                ) : null}
+              </div>
             </div>
+
+            <p
+              id={deleteConfirmId}
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              className="mt-3 font-mono text-[11px] tracking-tight text-ink"
+            >
+              {deleteConfirmation}
+            </p>
 
             <p id={fieldHintId} className="mt-3 text-[11px] leading-relaxed text-ink-muted">
               Vertex ids and edge endpoints are whole numbers, 0 or greater. Edge weights come

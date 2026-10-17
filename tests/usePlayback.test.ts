@@ -107,11 +107,29 @@ describe("playbackReducer", () => {
     expect(after.speed).toBe(9);
   });
 
-  it("does not play when there is nothing ahead", () => {
+  it("restarts from step 0 when play is pressed on the last step", () => {
     const atEnd = { ...initialPlaybackState, index: TOTAL - 1 };
-    expect(playbackReducer(atEnd, { type: "play", total: TOTAL }).playing).toBe(false);
+
+    const restarted = playbackReducer(atEnd, { type: "play", total: TOTAL });
+    expect(restarted.index).toBe(0);
+    expect(restarted.playing).toBe(true);
+
+    // The play/pause toggle takes the same restart path.
+    const toggled = playbackReducer(atEnd, { type: "toggle", total: TOTAL });
+    expect(toggled.index).toBe(0);
+    expect(toggled.playing).toBe(true);
+  });
+
+  it("does not play when there are no steps at all", () => {
     expect(
       playbackReducer({ ...initialPlaybackState }, { type: "play", total: 0 }).playing,
+    ).toBe(false);
+    expect(
+      playbackReducer({ ...initialPlaybackState, index: 3 }, { type: "play", total: 0 })
+        .index,
+    ).toBe(3);
+    expect(
+      playbackReducer({ ...initialPlaybackState }, { type: "toggle", total: 0 }).playing,
     ).toBe(false);
   });
 

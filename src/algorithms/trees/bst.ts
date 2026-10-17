@@ -402,41 +402,6 @@ export class VisualBST {
     return this.runTraversal("postorder");
   }
 
-  /** Height in NODES on the longest root-to-leaf path; empty tree is 0. */
-  height(): TreeOutcome {
-    this.begin();
-
-    if (this.root === null) {
-      this.snapshot(
-        "Height: the tree is empty — the longest path holds 0 nodes, so the height is 0.",
-      );
-      return this.finish(0);
-    }
-
-    const height = this.heightFrom(this.root, []);
-    this.snapshot(
-      `Height: ${height} — the longest root-to-leaf path has ${height} node${
-        height === 1 ? "" : "s"
-      } (${height - 1} edge${height - 1 === 1 ? "" : "s"}).`,
-    );
-    return this.finish(height);
-  }
-
-  /** Counts every node, one snapshot per node, and returns the total. */
-  nodeCount(): TreeOutcome {
-    this.begin();
-
-    if (this.root === null) {
-      this.snapshot("Node count: the tree is empty — 0 nodes.");
-      return this.finish(0);
-    }
-
-    const state = { count: 0 };
-    this.countFrom(this.root, state);
-    this.snapshot(`Node count: ${state.count} node${state.count === 1 ? "" : "s"}.`);
-    return this.finish(state.count);
-  }
-
   /** Drops every node and returns how many were removed. */
   clear(): TreeOutcome {
     this.begin();
@@ -608,42 +573,6 @@ export class VisualBST {
     }
     if (parent.left === oldChild) parent.left = replacement;
     else parent.right = replacement;
-  }
-
-  /** Recursive height used by the `height()` operation (emits steps). */
-  private heightFrom(node: TreeNode, path: number[]): number {
-    this.counters.nodesVisited += 1;
-    const here = [...path, node.value];
-    this.snapshot(
-      `Examine ${node.value} — depth ${here.length} of this path (${here.join(" → ")}).`,
-      { highlight: [node.value] },
-    );
-
-    if (node.left === null && node.right === null) {
-      this.snapshot(
-        `${node.value} is a leaf — this root-to-leaf path holds ${here.length} node${
-          here.length === 1 ? "" : "s"
-        }.`,
-        { highlight: [node.value] },
-      );
-      return 1;
-    }
-
-    const left = node.left !== null ? this.heightFrom(node.left, here) : 0;
-    const right = node.right !== null ? this.heightFrom(node.right, here) : 0;
-    return Math.max(left, right) + 1;
-  }
-
-  /** Recursive count used by the `nodeCount()` operation (emits steps). */
-  private countFrom(node: TreeNode, state: { count: number }): void {
-    this.counters.nodesVisited += 1;
-    if (node.left !== null) this.countFrom(node.left, state);
-    state.count += 1;
-    this.snapshot(
-      `Counted ${node.value} — ${state.count} node${state.count === 1 ? "" : "s"} so far.`,
-      { highlight: [node.value] },
-    );
-    if (node.right !== null) this.countFrom(node.right, state);
   }
 
   /** Pure recursive node count (no steps). */

@@ -95,7 +95,9 @@ export function BarChart({
                     : isActive
                       ? "text-accent"
                       : isCompared
-                        ? "text-compare"
+                        ? // The bar keeps --color-compare; the label uses the
+                          // lighter ink so 10px text clears 4.5:1.
+                          "text-compare-ink"
                         : "text-ink-muted",
                 )}
               >

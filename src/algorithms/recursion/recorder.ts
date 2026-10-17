@@ -72,11 +72,6 @@ export class RecursionRecorder {
     return { ...this.counters };
   }
 
-  /** True once the outermost frame has popped — used as a run invariant. */
-  stackIsEmpty(): boolean {
-    return this.frames.length === 0;
-  }
-
   /** Deep copy: fresh frames array, fresh frame objects every time. */
   private copyStack(): RecursionFrame[] {
     return this.frames.map((frame) => ({ ...frame }));
