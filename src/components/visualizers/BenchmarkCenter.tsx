@@ -59,16 +59,21 @@ function ResultsChart({
   data,
   seriesNames,
   logScale,
+  sizeRange,
 }: {
   title: string;
   caption: string;
   data: ChartPoint[];
   seriesNames: string[];
   logScale: boolean;
+  sizeRange?: string;
 }) {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const algorithmsText = seriesNames.length > 0 ? seriesNames.join(", ") : "no algorithms selected";
+  const sizeText = sizeRange ?? (data.length > 0 ? `${data[0].size} to ${data[data.length - 1].size}` : "");
+  const ariaLabel = `${title}. ${caption} Plotted for algorithms: ${algorithmsText}. Size range: ${sizeText}. Scale: ${logScale ? "logarithmic" : "linear"}.`;
   return (
-    <div className="panel p-5">
+    <div className="panel p-5" role="img" aria-label={ariaLabel} tabIndex={0}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="label">{title}</h3>
         <span className="font-mono text-[11px] tracking-tight text-ink-muted">
@@ -630,6 +635,7 @@ export function BenchmarkCenter() {
                 </p>
               </div>
             )}
+            <p className="sr-only">Refer to the measured results table above for exact values.</p>
           </section>
 
           {/* Charts */}
@@ -657,6 +663,7 @@ export function BenchmarkCenter() {
             data={chartData}
             seriesNames={seriesNames}
             logScale={logScale}
+            sizeRange={runConfig ? `${runConfig.sizes[0]} to ${runConfig.sizes[runConfig.sizes.length - 1]}` : undefined}
           />
           <ResultsChart
             title="Comparisons vs input size"
@@ -664,6 +671,7 @@ export function BenchmarkCenter() {
             data={comparisonData}
             seriesNames={seriesNames}
             logScale={logScale}
+            sizeRange={runConfig ? `${runConfig.sizes[0]} to ${runConfig.sizes[runConfig.sizes.length - 1]}` : undefined}
           />
 
           {/* Theoretical reference — deliberately apart from the measurements. */}

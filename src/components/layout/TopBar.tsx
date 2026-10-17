@@ -1,18 +1,21 @@
 "use client";
 
 import { Menu } from "lucide-react";
+import { type RefObject } from "react";
 
 type TopBarProps = {
   title: string;
   path: string;
   menuOpen: boolean;
   onOpenMenu: () => void;
+  toggleRef?: RefObject<HTMLButtonElement | null>;
 };
 
-export function TopBar({ title, path, menuOpen, onOpenMenu }: TopBarProps) {
+export function TopBar({ title, path, menuOpen, onOpenMenu, toggleRef }: TopBarProps) {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-line bg-bg/95 px-4 backdrop-blur-sm sm:px-6">
       <button
+        ref={toggleRef}
         type="button"
         onClick={onOpenMenu}
         aria-label="Open navigation menu"
