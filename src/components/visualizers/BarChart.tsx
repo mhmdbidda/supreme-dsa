@@ -91,7 +91,7 @@ export function BarChart({
                 className={cn(
                   "truncate text-center font-mono text-[10px] tracking-tight transition-colors duration-150",
                   isSorted
-                    ? "text-sorted"
+                    ? "text-sorted-ink"
                     : isActive
                       ? "text-accent"
                       : isCompared

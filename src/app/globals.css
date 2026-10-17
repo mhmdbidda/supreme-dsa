@@ -14,6 +14,9 @@
      the bar keeps #737373, the 10px label needs >= 4.5:1 (#8f8f8f = 6:1). */
   --color-compare-ink: #8f8f8f;
   --color-sorted: #55805f;
+  /* Lighter sibling of --color-sorted, for TEXT on the dark chart panel:
+      the bar keeps #55805f, the 10px label needs >= 4.5:1. */
+  --color-sorted-ink: #6fa077;
   --color-bar: #333333;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
