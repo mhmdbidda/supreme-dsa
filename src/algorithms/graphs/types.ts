@@ -11,9 +11,10 @@
  * - Pure TypeScript: no React, no DOM, no graph library — the structure is a
  *   hand-rolled adjacency list (`Map<number, GraphEdge[]>`) inside `Graph`.
  * - Every mutating operation returns `{ ok, error? }` and NEVER throws. An
- *   invalid operation (duplicate vertex, edge to a missing vertex, self-loop,
- *   duplicate edge, removing what is not there) returns `error` and leaves
- *   the graph unchanged.
+ *   invalid operation (duplicate vertex, a vertex past the
+ *   `MAX_GRAPH_VERTICES` cap, edge to a missing vertex, self-loop, duplicate
+ *   edge, removing what is not there) returns `error` and leaves the graph
+ *   unchanged.
  * - `bfs` / `dfs` return `{ result, steps, counters, error? }`. An invalid or
  *   missing start vertex returns `error` with an empty order.
  * - Steps are immutable snapshots: `visited`, `frontier`, `order` (and

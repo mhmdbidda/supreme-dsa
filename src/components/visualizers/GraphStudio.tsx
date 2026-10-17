@@ -1,13 +1,14 @@
 "use client";
 
 import { Eraser, Plus, Share2, Sparkles, TriangleAlert } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Graph,
   SAMPLE_GRAPH,
   bfs,
   dfs,
   getGraphMeta,
+  type AdjacencyMatrix,
   type GraphAlgorithm,
   type GraphStep,
   type GraphTraversalOutcome,
@@ -47,6 +48,16 @@ const TOOL_BUTTON_CLASS =
 
 const INPUT_CLASS =
   "w-full rounded-md border border-line bg-surface-2 px-3 py-2 font-mono text-[13px] tracking-tight text-ink placeholder:text-ink-muted/60";
+
+const DISCLOSE_BUTTON_CLASS =
+  "flex h-8 items-center gap-1.5 rounded-md border border-line bg-surface-2 px-2.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-muted transition-colors hover:border-white/20 hover:text-ink";
+
+/**
+ * Stand-in while the matrix panel is collapsed: the real V² view is built
+ * only when the panel is open (see the `useMemo` below), so hiding it does
+ * zero matrix work instead of rendering cells nobody can see.
+ */
+const EMPTY_MATRIX: AdjacencyMatrix = { vertices: [], matrix: [] };
 
 /** Deterministic position for a vertex added by id (clicking the canvas uses the click point). */
 function gridPosition(index: number): GraphPoint {
@@ -173,15 +184,26 @@ export function GraphStudio() {
   // One persistent graph — never recreated between edits.
   const [graph] = useState(() => new Graph({ directed: false, weighted: false }));
   // Bumped after every edit/toggle so the derived views re-read the engine.
-  // The value itself is unused: the bump is what forces the re-render.
-  const [, setVersion] = useState(0);
+  const [version, setVersion] = useState(0);
 
   const vertices = graph.vertices();
   const edges = graph.edgeList();
   const adjacency = graph.toAdjacencyList();
-  const matrix = graph.toAdjacencyMatrix();
   const directed = graph.isDirected();
   const weighted = graph.isWeighted();
+
+  // The matrix is the only O(V²) view: it is built ONLY while its panel is
+  // open, and only when the graph actually changed (the version bump is the
+  // change signal) — never on every render.
+  const [showMatrix, setShowMatrix] = useState(true);
+  const matrix = useMemo(
+    () => (showMatrix ? graph.toAdjacencyMatrix() : EMPTY_MATRIX),
+    // `version` is the revision signal for the MUTABLE engine: `graph`
+    // keeps its identity across edits, so without it this memo would never
+    // refresh after add/remove. Nothing in the callback reads the number.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- version is the engine's revision signal
+    [graph, showMatrix, version],
+  );
 
   // Positions are UI state only — the engine knows nothing about geometry.
   const [positions, setPositions] = useState<Map<number, GraphPoint>>(new Map());
@@ -385,7 +407,10 @@ export function GraphStudio() {
     }
     const outcome = graph.addVertex(id);
     if (!outcome.ok) {
-      rejectEdit(outcome.error);
+      // Show the engine's refusal (duplicate id, vertex cap, …) in the
+      // add-by-id form itself, right next to the field that caused it.
+      setFieldError(outcome.error ?? "The vertex was not added.");
+      setOperationError(null);
       return;
     }
     setPositions((previous) => new Map(previous).set(id, gridPosition(vertices.length)));
@@ -906,49 +931,67 @@ export function GraphStudio() {
           </section>
 
           <section className="panel p-5" aria-labelledby="graph-matrix-heading">
-            <h2 id="graph-matrix-heading" className="label">
-              Adjacency matrix
-            </h2>
-            {matrix.vertices.length === 0 ? (
-              <p className="mt-3 text-[13px] leading-relaxed text-ink-muted">
-                No vertices yet.
-              </p>
-            ) : (
-              <div className="mt-3 overflow-x-auto">
-                <table className="border-collapse font-mono text-[11px] tracking-tight">
-                  <thead>
-                    <tr>
-                      <th className="p-1 text-ink-muted" aria-label="from / to" />
-                      {matrix.vertices.map((vertex) => (
-                        <th key={vertex} className="p-1 text-center text-ink-muted">
-                          {vertex}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {matrix.matrix.map((row, index) => (
-                      <tr key={matrix.vertices[index]}>
-                        <th className="p-1 text-right text-ink-muted">
-                          {matrix.vertices[index]}
-                        </th>
-                        {row.map((cell, column) => (
-                          <td
-                            key={column}
-                            className={cn(
-                              "min-w-7 border border-line px-1 py-1 text-center",
-                              cell !== 0 ? "text-ink" : "text-ink-muted/50",
-                            )}
-                          >
-                            {cell}
-                          </td>
+            <div className="flex items-center justify-between gap-3">
+              <h2 id="graph-matrix-heading" className="label">
+                Adjacency matrix
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowMatrix((open) => !open)}
+                aria-expanded={showMatrix}
+                aria-controls="graph-matrix-body"
+                className={DISCLOSE_BUTTON_CLASS}
+              >
+                {showMatrix ? "Hide" : "Show"}
+              </button>
+            </div>
+            <div id="graph-matrix-body">
+              {!showMatrix ? (
+                <p className="mt-3 text-[13px] leading-relaxed text-ink-muted">
+                  Hidden — the {vertices.length} × {vertices.length} cell matrix is not built
+                  until you show it again.
+                </p>
+              ) : matrix.vertices.length === 0 ? (
+                <p className="mt-3 text-[13px] leading-relaxed text-ink-muted">
+                  No vertices yet.
+                </p>
+              ) : (
+                <div className="mt-3 overflow-x-auto">
+                  <table className="border-collapse font-mono text-[11px] tracking-tight">
+                    <thead>
+                      <tr>
+                        <th className="p-1 text-ink-muted" aria-label="from / to" />
+                        {matrix.vertices.map((vertex) => (
+                          <th key={vertex} className="p-1 text-center text-ink-muted">
+                            {vertex}
+                          </th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                    </thead>
+                    <tbody>
+                      {matrix.matrix.map((row, index) => (
+                        <tr key={matrix.vertices[index]}>
+                          <th className="p-1 text-right text-ink-muted">
+                            {matrix.vertices[index]}
+                          </th>
+                          {row.map((cell, column) => (
+                            <td
+                              key={column}
+                              className={cn(
+                                "min-w-7 border border-line px-1 py-1 text-center",
+                                cell !== 0 ? "text-ink" : "text-ink-muted/50",
+                              )}
+                            >
+                              {cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
             <p className="mt-3 text-[11px] leading-relaxed text-ink-muted">{meta.matrixNote}</p>
           </section>
 

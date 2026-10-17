@@ -12,6 +12,15 @@ export type GraphOptions = {
   weighted?: boolean;
 };
 
+/**
+ * Hard cap on the vertex count. The derived adjacency matrix is V² cells
+ * (and the studio renders one DOM cell each), so the graph stays usable
+ * only below a fixed size — 64 keeps the matrix at 4 096 cells. Reaching
+ * the cap REFUSES the `addVertex` call (like every other mutation) and
+ * never throws; removing a vertex frees a slot again.
+ */
+export const MAX_GRAPH_VERTICES = 64;
+
 /** Small helper so every refusal has the same shape. */
 function refused(error: string): GraphEditOutcome {
   return { ok: false, error };
@@ -32,8 +41,9 @@ function succeeded(): GraphEditOutcome {
  * vertex id.
  *
  * Mutations never throw: they return `{ ok, error? }` and leave the graph
- * untouched when refused (duplicate vertex, edge to a missing vertex,
- * self-loop, duplicate edge, or removing something that is not there).
+ * untouched when refused (duplicate vertex, a vertex past the
+ * `MAX_GRAPH_VERTICES` cap, edge to a missing vertex, self-loop, duplicate
+ * edge, or removing something that is not there).
  */
 export class Graph {
   private adjacency = new Map<number, GraphEdge[]>();
@@ -161,13 +171,22 @@ export class Graph {
 
   // --------------------------------------------------------- mutations --
 
-  /** Adds a vertex; a duplicate id is refused. */
+  /**
+   * Adds a vertex; a duplicate id is refused, and so is any id that would
+   * push the graph past `MAX_GRAPH_VERTICES` (the V² matrix cap). Returns
+   * `{ ok: false, error }` — never throws.
+   */
   addVertex(id: number): GraphEditOutcome {
     if (!Number.isInteger(id)) {
       return refused("A vertex id must be a whole number.");
     }
     if (this.adjacency.has(id)) {
       return refused(`Vertex ${id} already exists.`);
+    }
+    if (this.adjacency.size >= MAX_GRAPH_VERTICES) {
+      return refused(
+        `The vertex cap of ${MAX_GRAPH_VERTICES} has been reached — remove a vertex before adding "${id}" (an adjacency matrix of that size would already be ${MAX_GRAPH_VERTICES}×${MAX_GRAPH_VERTICES} cells).`,
+      );
     }
     this.adjacency.set(id, []);
     return succeeded();

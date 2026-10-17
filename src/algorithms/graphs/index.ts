@@ -49,7 +49,7 @@ export function getGraphMeta(): GraphMeta {
   return graphs;
 }
 
-export { Graph, type GraphOptions } from "./graph";
+export { Graph, MAX_GRAPH_VERTICES, type GraphOptions } from "./graph";
 export { bfs, dfs } from "./traversal";
 export type {
   AdjacencyListEntry,

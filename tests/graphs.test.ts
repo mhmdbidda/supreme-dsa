@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Graph } from "../src/algorithms/graphs/graph";
+import { Graph, MAX_GRAPH_VERTICES } from "../src/algorithms/graphs/graph";
 import { bfs, dfs } from "../src/algorithms/graphs/traversal";
 import { SAMPLE_GRAPH } from "../src/algorithms/graphs";
 import {
@@ -134,6 +134,59 @@ describe("Graph · editing", () => {
     expect(graph.clear().ok).toBe(true);
     expect(graph.vertices()).toEqual([]);
     expect(graph.edgeCount()).toBe(0);
+  });
+});
+
+describe("Graph · vertex cap", () => {
+  it("accepts exactly MAX_GRAPH_VERTICES vertices and refuses the next one", () => {
+    expect(MAX_GRAPH_VERTICES).toBe(64);
+
+    const graph = new Graph();
+    for (let id = 0; id < MAX_GRAPH_VERTICES; id += 1) {
+      expect(graph.addVertex(id).ok).toBe(true);
+    }
+    expect(graph.vertexCount()).toBe(MAX_GRAPH_VERTICES);
+
+    // The refusal carries a clear message, never throws, never mutates.
+    const outcome = graph.addVertex(MAX_GRAPH_VERTICES);
+    expect(outcome.ok).toBe(false);
+    expect(outcome.error).toBeTruthy();
+    expect(outcome.error).toMatch(/cap/i);
+    expect(outcome.error).toContain(String(MAX_GRAPH_VERTICES));
+    expect(graph.vertexCount()).toBe(MAX_GRAPH_VERTICES);
+    expect(graph.hasVertex(MAX_GRAPH_VERTICES)).toBe(false);
+    expect(graph.toAdjacencyMatrix().matrix).toHaveLength(MAX_GRAPH_VERTICES);
+    expect(graph.toAdjacencyMatrix().matrix[0]).toHaveLength(MAX_GRAPH_VERTICES);
+  });
+
+  it("keeps reporting duplicates and bad ids while at the cap", () => {
+    const graph = new Graph();
+    for (let id = 0; id < MAX_GRAPH_VERTICES; id += 1) graph.addVertex(id);
+
+    expect(graph.addVertex(0).error).toMatch(/already exists/i);
+    expect(graph.addVertex(1.5).error).toMatch(/whole number/i);
+    expect(graph.vertexCount()).toBe(MAX_GRAPH_VERTICES);
+  });
+
+  it("frees a slot when a vertex is removed", () => {
+    const graph = new Graph();
+    for (let id = 0; id < MAX_GRAPH_VERTICES; id += 1) graph.addVertex(id);
+
+    expect(graph.removeVertex(7).ok).toBe(true);
+    expect(graph.vertexCount()).toBe(MAX_GRAPH_VERTICES - 1);
+    expect(graph.addVertex(MAX_GRAPH_VERTICES).ok).toBe(true);
+    expect(graph.vertexCount()).toBe(MAX_GRAPH_VERTICES);
+  });
+
+  it("caps directed graphs too, without blocking edges below the cap", () => {
+    const graph = new Graph({ directed: true });
+    for (let id = 0; id < MAX_GRAPH_VERTICES; id += 1) {
+      expect(graph.addVertex(id).ok).toBe(true);
+    }
+    expect(graph.addEdge(0, MAX_GRAPH_VERTICES - 1, 3).ok).toBe(true);
+    expect(graph.addVertex(MAX_GRAPH_VERTICES)).toMatchObject({ ok: false });
+    expect(graph.vertexCount()).toBe(MAX_GRAPH_VERTICES);
+    expect(graph.edgeCount()).toBe(1);
   });
 });
 

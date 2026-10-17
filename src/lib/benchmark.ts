@@ -422,9 +422,28 @@ export function createRun(config: BenchmarkConfig, results: BenchmarkRow[]): Ben
   };
 }
 
+/**
+ * Leading characters a spreadsheet would treat as the START OF A FORMULA
+ * (`=1+1`, `+cmd`, `-2+3`, `@SUM(...)`, a tab- or CR-led cell). Exporting
+ * them verbatim makes the cell executable the moment the CSV is opened, so
+ * each one is neutralized with a single leading quote — the standard
+ * defence. Numeric cells are exempt: a leading `-` there is a sign, not a
+ * formula, and must stay a plain number.
+ */
+const CSV_FORMULA_TRIGGERS = new Set(["=", "+", "-", "@", "\t", "\r"]);
+
+/** True for a cell that is (or reads as) a plain number: `42`, `-1.500`. */
+function isNumericCell(text: string): boolean {
+  if (text === "" || !/\d/.test(text)) return false;
+  return Number.isFinite(Number(text));
+}
+
 function csvCell(value: string | number): string {
   const text = String(value);
-  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  const dangerous =
+    !isNumericCell(text) && text.length > 0 && CSV_FORMULA_TRIGGERS.has(text[0]);
+  const safe = dangerous ? `'${text}` : text;
+  return /[",\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
 }
 
 /**
@@ -484,16 +503,58 @@ export function runToJson(run: BenchmarkRun): string {
 
 // ----------------------------------------------------------------- history --
 
-function isBenchmarkRun(value: unknown): value is BenchmarkRun {
+/**
+ * Full shape check for anything that claims to be a saved run. Reading
+ * localStorage is untrusted input (the JSON can be edited, truncated or
+ * written by an older build), so EVERY field is checked before a run is
+ * handed back to the UI:
+ * - `id` is a string, `createdAt` parses to a real date,
+ * - `config` passes `validateBenchmarkConfig` (known algorithms, integer
+ *   sizes inside [1, MAX_BENCHMARK_SIZE], an allowed input type, trials in
+ *   [MIN_TRIALS, MAX_TRIALS], an integer seed in [0, MAX_SEED]),
+ * - every `results` entry is a row with a known algorithm/family/input type
+ *   and finite numbers everywhere (size and trials are whole numbers in
+ *   range; medians and counters are finite and non-negative).
+ * Anything else is rejected (`false`) instead of thrown at the caller.
+ */
+export function isBenchmarkRun(value: unknown): value is BenchmarkRun {
   if (typeof value !== "object" || value === null) return false;
   const run = value as Partial<BenchmarkRun>;
-  return (
-    typeof run.id === "string" &&
-    typeof run.createdAt === "string" &&
-    typeof run.config === "object" &&
-    run.config !== null &&
-    Array.isArray(run.results)
+
+  if (typeof run.id !== "string") return false;
+  if (typeof run.createdAt !== "string" || !Number.isFinite(Date.parse(run.createdAt))) {
+    return false;
+  }
+  if (typeof run.config !== "object" || run.config === null) return false;
+  if (!validateBenchmarkConfig(run.config as BenchmarkConfig).ok) return false;
+  if (!Array.isArray(run.results)) return false;
+  return run.results.every(isBenchmarkRow);
+}
+
+/** One `results` entry: known categorical values, finite numbers only. */
+function isBenchmarkRow(value: unknown): value is BenchmarkRow {
+  if (typeof value !== "object" || value === null) return false;
+  const row = value as Partial<BenchmarkRow>;
+
+  const known = BENCHMARK_ALGORITHMS.some(
+    (entry) => entry.id === row.algorithmId && entry.family === row.family,
   );
+  if (!known) return false;
+  if (typeof row.name !== "string") return false;
+  if (!INPUT_TYPES.some((entry) => entry.id === row.inputType)) return false;
+  if (!isIntegerInRange(row.size, 1, MAX_BENCHMARK_SIZE)) return false;
+  if (!isIntegerInRange(row.trials, MIN_TRIALS, MAX_TRIALS)) return false;
+  return isFiniteCount(row.medianMs) && isFiniteCount(row.comparisons) && isFiniteCount(row.swaps);
+}
+
+/** A whole number inside `[min, max]` (both inclusive), nothing else. */
+function isIntegerInRange(value: unknown, min: number, max: number): boolean {
+  return typeof value === "number" && Number.isInteger(value) && value >= min && value <= max;
+}
+
+/** A measurable, non-negative, finite number — never NaN/±Infinity/strings. */
+function isFiniteCount(value: unknown): boolean {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
 }
 
 /**

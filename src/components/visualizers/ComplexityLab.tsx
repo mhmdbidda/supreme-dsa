@@ -13,7 +13,9 @@ type LabMode = "recursion" | "benchmark";
  * Landing on `/complexity?run=<id>` (the dashboard's Recent experiments
  * list) opens the Benchmark Center so the saved run can be reopened there.
  * The query string is read AFTER hydration, so the whole page still
- * prerenders statically.
+ * prerenders statically; when the id matches no saved run, the Benchmark
+ * Center itself shows a visible "not found" notice instead of silently
+ * opening the defaults.
  */
 export function ComplexityLab() {
   const [mode, setMode] = useState<LabMode>("recursion");

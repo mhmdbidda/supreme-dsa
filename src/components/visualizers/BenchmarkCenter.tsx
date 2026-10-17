@@ -155,6 +155,9 @@ export function BenchmarkCenter() {
   const [currentRun, setCurrentRun] = useState<BenchmarkRun | null>(null);
   const [wasCancelled, setWasCancelled] = useState(false);
   const [logScale, setLogScale] = useState(false);
+  // Set when `?run=<id>` matches no saved run: instead of silently opening
+  // the defaults, the page says so (see the notice below the header).
+  const [missingRun, setMissingRun] = useState(false);
 
   const cancelRef = useRef(false);
   const reopenRef = useRef(false);
@@ -163,14 +166,19 @@ export function BenchmarkCenter() {
   // Reopening a saved run (from the dashboard's Recent experiments list,
   // which links to /complexity?run=<id>) restores config AND results. The
   // query string is read after hydration so the page stays static, and the
-  // run itself comes from localStorage (also read post-hydration).
+  // run itself comes from localStorage (also read post-hydration). When the
+  // id matches NOTHING that is saved in this browser, `missingRun` turns the
+  // silent default into a visible notice.
   useEffect(() => {
     if (reopenRef.current) return;
     const reopenId = new URLSearchParams(window.location.search).get("run");
     if (reopenId === null) return;
-    const match = loadRecentRuns().find((run) => run.id === reopenId);
-    if (match === undefined) return;
     reopenRef.current = true;
+    const match = loadRecentRuns().find((run) => run.id === reopenId);
+    if (match === undefined) {
+      setMissingRun(true);
+      return;
+    }
     reopenRun(match);
   }, []);
 
@@ -185,6 +193,7 @@ export function BenchmarkCenter() {
     setResults(run.results);
     setCurrentRun(run);
     setWasCancelled(false);
+    setMissingRun(false);
   };
 
   const totalRuns =
@@ -357,6 +366,23 @@ export function BenchmarkCenter() {
           {totalRuns} timed runs per experiment
         </span>
       </div>
+
+      {/* ?run=<id> that matches nothing saved in this browser — visible
+          instead of silently falling back to the default configuration. */}
+      {missingRun ? (
+        <p
+          role="status"
+          className="panel flex items-center gap-2.5 border-accent/40 px-5 py-3 text-[13px] tracking-tight text-ink"
+        >
+          <TriangleAlert
+            size={15}
+            strokeWidth={1.75}
+            className="shrink-0 text-accent"
+            aria-hidden="true"
+          />
+          That saved run was not found in this browser
+        </p>
+      ) : null}
 
       {/* The honesty note — deliberately above the fold of the results. */}
       <div

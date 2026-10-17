@@ -2,7 +2,11 @@
 
 import { Clock3, History, Inbox, RotateCcw, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { formatRunSummary, type BenchmarkRun } from "@/lib/benchmark";
+import {
+  formatRunSummary,
+  isBenchmarkRun,
+  type BenchmarkRun,
+} from "@/lib/benchmark";
 import { useRecentBenchmarkRuns } from "@/hooks/useRecentBenchmarkRuns";
 
 type DashboardProps = {
@@ -22,10 +26,21 @@ type LabProps = {
 
 type RecentExperimentsProps = DashboardProps | LabProps;
 
+/**
+ * Local timestamp of a saved run. A run whose `createdAt` is not a real
+ * date is already filtered out by `isBenchmarkRun`, but the formatter is
+ * still defensive so a rejected/tampered entry can never surface an
+ * "Invalid Date" label.
+ */
+function runTimestamp(run: BenchmarkRun): string {
+  const time = Date.parse(run.createdAt);
+  return Number.isNaN(time) ? "Unknown date" : new Date(time).toLocaleString();
+}
+
 function RunTimestamp({ run }: { run: BenchmarkRun }) {
   return (
     <span className="font-mono text-[11px] tracking-tight text-ink-muted">
-      {new Date(run.createdAt).toLocaleString()}
+      {runTimestamp(run)}
     </span>
   );
 }
@@ -38,10 +53,15 @@ function RunTimestamp({ run }: { run: BenchmarkRun }) {
  *   run back to the Complexity Lab (`/complexity?run=<id>`).
  * - `lab` is driven by the Benchmark Center's own list: Reopen loads the
  *   run back into the UI, Forget removes it from storage.
+ * - Anything that fails `isBenchmarkRun` (a tampered or corrupted entry) is
+ *   skipped, so the list never throws and never shows an "Invalid Date".
  */
 export function RecentExperiments(props: RecentExperimentsProps) {
   const selfLoaded = useRecentBenchmarkRuns();
-  const runs = props.runs ?? (props.variant === "dashboard" ? selfLoaded.runs : []);
+  const loaded = props.runs ?? (props.variant === "dashboard" ? selfLoaded.runs : []);
+  // Defensive: a tampered/corrupted entry is dropped here instead of being
+  // rendered (and never reaching `formatRunSummary` / the date formatter).
+  const runs = loaded.filter(isBenchmarkRun);
 
   return (
     <section className="panel p-6" aria-labelledby="recent-heading">
@@ -113,7 +133,7 @@ export function RecentExperiments(props: RecentExperimentsProps) {
                   <button
                     type="button"
                     onClick={() => props.onForget(run.id)}
-                    aria-label={`Forget run from ${new Date(run.createdAt).toLocaleString()}`}
+                    aria-label={`Forget run from ${runTimestamp(run)}`}
                     title="Forget this run"
                     className="flex h-10 w-10 items-center justify-center rounded-md border border-line text-ink-muted transition-colors hover:text-ink"
                   >

@@ -15,6 +15,7 @@ import {
   createRng,
   formatRunSummary,
   generateInput,
+  isBenchmarkRun,
   loadRecentRuns,
   median,
   prepareSearchInput,
@@ -373,6 +374,44 @@ describe("resultsToCsv", () => {
     const rows = resultsToCsv(run).split("\n").slice(10);
     expect(rows[0].startsWith('"Bubble, ""Sort""",sorting')).toBe(true);
   });
+
+  it("neutralizes spreadsheet formula injection in a cell starting with '='", () => {
+    const run = sampleRun();
+    run.results[0].name = "=1+1";
+    run.results[1].name = "@SUM(A1)";
+    const rows = resultsToCsv(run).split("\n").slice(10);
+    expect(rows[0]).toBe("'=1+1,sorting,100,sorted,5,1.235,99,0");
+    expect(rows[1]).toBe("'@SUM(A1),searching,500,sorted,5,12.500,500,0");
+  });
+
+  it("prefixes a single quote on every formula trigger: = + - @ tab CR", () => {
+    for (const trigger of ["=", "+", "-", "@", "\t", "\r"]) {
+      const run = sampleRun();
+      run.results[0].name = `${trigger}evil`;
+      const firstRow = resultsToCsv(run).split("\n")[10];
+      expect(firstRow.startsWith(`'${trigger}evil,`), `trigger ${JSON.stringify(trigger)}`).toBe(
+        true,
+      );
+    }
+  });
+
+  it("still quotes a neutralized cell that also contains a comma", () => {
+    const run = sampleRun();
+    run.results[0].name = "=SUM(A1, B2)";
+    const firstRow = resultsToCsv(run).split("\n")[10];
+    expect(firstRow).toBe(`"'=SUM(A1, B2)",sorting,100,sorted,5,1.235,99,0`);
+  });
+
+  it("keeps numeric cells plain numbers, negatives included", () => {
+    const run = sampleRun();
+    run.results[0].medianMs = -1.5; // exported as the numeric string "-1.500"
+    run.results[0].comparisons = -42; // exported from the number itself
+    run.results[1].swaps = -7;
+    const rows = resultsToCsv(run).split("\n").slice(10);
+    expect(rows[0]).toBe("Bubble Sort,sorting,100,sorted,5,-1.500,-42,0");
+    expect(rows[1]).toBe("Linear Search,searching,500,sorted,5,12.500,500,-7");
+    expect(rows[0]).not.toContain("'-");
+  });
 });
 
 describe("runToJson", () => {
@@ -388,6 +427,91 @@ describe("runToJson", () => {
     expect(parsed.results).toEqual(run.results);
     expect(parsed.id).toBe(run.id);
     expect(parsed.createdAt).toBe(run.createdAt);
+  });
+});
+
+describe("isBenchmarkRun — full shape validation", () => {
+  it("accepts a well-formed run", () => {
+    expect(isBenchmarkRun(sampleRun())).toBe(true);
+  });
+
+  it("rejects tampered shapes instead of trusting them", () => {
+    const run = sampleRun();
+    const row = run.results[0];
+
+    const rejected: Array<[string, unknown]> = [
+      ["a non-object", "run-test-1"],
+      ["a null entry", null],
+      ["a numeric id", { ...run, id: 42 }],
+      ["a non-string id", { ...run, id: undefined }],
+      ["an unparseable createdAt", { ...run, createdAt: "yesterday afternoon" }],
+      ["a missing createdAt", { ...run, createdAt: undefined }],
+      ["a config that is a string", { ...run, config: "bubble merge" }],
+      ["a null config", { ...run, config: null }],
+      ["an unknown algorithm", { ...run, config: { ...run.config, algorithms: ["quicksort"] } }],
+      ["a string size", { ...run, config: { ...run.config, sizes: ["100"] } }],
+      ["a zero size", { ...run, config: { ...run.config, sizes: [0] } }],
+      ["an oversized size", { ...run, config: { ...run.config, sizes: [5001] } }],
+      ["an unknown input type", { ...run, config: { ...run.config, inputType: "shuffled" } }],
+      ["fractional trials", { ...run, config: { ...run.config, trials: 3.5 } }],
+      ["out-of-range trials", { ...run, config: { ...run.config, trials: 999 } }],
+      ["a negative seed", { ...run, config: { ...run.config, seed: -1 } }],
+      ["results that are not an array", { ...run, results: "1,2,3" }],
+      ["a string median", { ...run, results: [{ ...row, medianMs: "1.235" }] }],
+      ["a NaN median", { ...run, results: [{ ...row, medianMs: Number.NaN }] }],
+      ["an infinite median", { ...run, results: [{ ...row, medianMs: Number.POSITIVE_INFINITY }] }],
+      ["a null comparison count", { ...run, results: [{ ...row, comparisons: null }] }],
+      ["a string swap count", { ...run, results: [{ ...row, swaps: "0" }] }],
+      ["a zero-sized row", { ...run, results: [{ ...row, size: 0 }] }],
+      ["a wrong family", { ...run, results: [{ ...row, family: "hashing" }] }],
+      ["an unknown row algorithm", { ...run, results: [{ ...row, algorithmId: "quicksort" }] }],
+      ["a row that is not an object", { ...run, results: [null] }],
+    ];
+
+    for (const [name, value] of rejected) {
+      expect(isBenchmarkRun(value), name).toBe(false);
+    }
+  });
+
+  it("drops tampered saved runs from storage without throwing", () => {
+    // Minimal in-memory localStorage stand-in (same seam as the history test).
+    const store = new Map<string, string>();
+    const globals = globalThis as { window?: unknown };
+    globals.window = {
+      localStorage: {
+        getItem: (key: string) => store.get(key) ?? null,
+        setItem: (key: string, value: string) => {
+          store.set(key, value);
+        },
+        removeItem: (key: string) => {
+          store.delete(key);
+        },
+      },
+    };
+
+    try {
+      const valid = sampleRun();
+      const tampered: unknown[] = [
+        { ...valid, id: 42 },
+        { ...valid, createdAt: "not a date" },
+        { ...valid, config: { ...valid.config, trials: 999 } },
+        { ...valid, results: [{ ...valid.results[0], medianMs: "1.235" }] },
+        { ...valid, results: [{ ...valid.results[0], size: 5001 }] },
+        null,
+        "run-test-2",
+        7,
+      ];
+      store.set(BENCHMARK_HISTORY_KEY, JSON.stringify([valid, ...tampered]));
+
+      const runs = loadRecentRuns();
+      expect(runs).toHaveLength(1);
+      expect(runs[0].id).toBe("run-test-1");
+      for (const run of runs) expect(() => formatRunSummary(run)).not.toThrow();
+
+      expect(clearRecentRuns()).toEqual([]);
+    } finally {
+      delete globals.window;
+    }
   });
 });
 
