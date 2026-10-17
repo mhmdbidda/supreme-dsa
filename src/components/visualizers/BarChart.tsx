@@ -7,6 +7,11 @@ type BarChartProps = {
   activeIndices?: number[];
   comparedIndices?: number[];
   sortedIndices?: number[];
+  /**
+   * Binary search window: every bar outside `[low, high]` is dimmed.
+   * Sorting never passes it, so its rendering is unchanged.
+   */
+  dimRange?: { low: number; high: number } | null;
   /** Describes the current frame; used as the accessible name. */
   ariaLabel: string;
 };
@@ -25,6 +30,7 @@ export function BarChart({
   activeIndices,
   comparedIndices,
   sortedIndices,
+  dimRange,
   ariaLabel,
 }: BarChartProps) {
   const showLabels = array.length > 0 && array.length <= 16;
@@ -50,6 +56,8 @@ export function BarChart({
         const isSorted = sorted.has(index);
         const isActive = active.has(index);
         const isCompared = compared.has(index);
+        const isDimmed =
+          dimRange != null && (index < dimRange.low || index > dimRange.high);
 
         const tone = isSorted
           ? "bg-sorted"
@@ -62,7 +70,10 @@ export function BarChart({
         return (
           <div
             key={index}
-            className="flex h-full min-w-0 flex-1 flex-col justify-end gap-1.5"
+            className={cn(
+              "flex h-full min-w-0 flex-1 flex-col justify-end gap-1.5 transition-opacity duration-150 ease-out",
+              isDimmed && "opacity-30",
+            )}
           >
             {showLabels ? (
               <span

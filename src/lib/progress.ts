@@ -1,3 +1,4 @@
+import type { SearchStep } from "@/algorithms/searching/types";
 import type { SortStep } from "@/algorithms/sorting/types";
 
 export type StepProgress = {
@@ -37,4 +38,29 @@ export function summarizeProgress(steps: SortStep[], index: number): StepProgres
   }
 
   return { comparisons, swaps, stepNumber: last + 1, totalSteps };
+}
+
+/**
+ * Same idea for search playback: search has a single counter, and every
+ * step that probed an element carries `comparedIndices` (see
+ * `src/algorithms/searching/types.ts`), so comparisons grow one per probe.
+ * `swaps` is always 0 — search never writes to the array.
+ */
+export function summarizeSearchProgress(
+  steps: SearchStep[],
+  index: number,
+): StepProgress {
+  const totalSteps = steps.length;
+  if (totalSteps === 0) {
+    return { comparisons: 0, swaps: 0, stepNumber: 0, totalSteps: 0 };
+  }
+
+  const last = Math.min(Math.max(index, 0), totalSteps - 1);
+  let comparisons = 0;
+
+  for (let i = 0; i <= last; i++) {
+    if (steps[i].comparedIndices !== undefined) comparisons += 1;
+  }
+
+  return { comparisons, swaps: 0, stepNumber: last + 1, totalSteps };
 }

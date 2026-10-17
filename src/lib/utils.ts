@@ -49,3 +49,19 @@ export function parseNumberList(input: string, maxItems = MAX_ARRAY_SIZE): Parse
 
   return { ok: true, values: tokens.map((token) => Number(token)) };
 }
+
+export type SingleParseResult =
+  | { ok: true; value: number }
+  | { ok: false; error: string };
+
+/** Parses one target value, e.g. "7", "-3" or "2.5". */
+export function parseSingleNumber(input: string): SingleParseResult {
+  const trimmed = input.trim();
+  if (trimmed === "") {
+    return { ok: false, error: "Enter a target value, e.g. 7." };
+  }
+  if (!NUMBER_PATTERN.test(trimmed)) {
+    return { ok: false, error: "Numbers only — enter a single value, e.g. 7 or -3." };
+  }
+  return { ok: true, value: Number(trimmed) };
+}
