@@ -3,14 +3,13 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpDown,
-  Clock3,
   Database,
   Gauge,
   GitBranch,
-  Inbox,
   Network,
   type LucideIcon,
 } from "lucide-react";
+import { RecentExperiments } from "@/components/RecentExperiments";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -59,8 +58,8 @@ const MODULES: Module[] = [
     href: "/complexity",
     title: "Complexity",
     description:
-      "Growth-rate curves and Big-O trade-offs backed by the lab's own counters.",
-    status: "Coming next",
+      "A recursion visualizer with live call stacks, plus a benchmark center measuring sorting and searching as n grows.",
+    status: "Ready",
     icon: Gauge,
   },
 ];
@@ -123,7 +122,7 @@ export default function DashboardPage() {
             Modules
           </h2>
           <span className="font-mono text-[11px] text-ink-muted">
-            2 ready · 3 coming next
+            3 ready · 2 coming next
           </span>
         </div>
 
@@ -159,33 +158,7 @@ export default function DashboardPage() {
         </ul>
       </section>
 
-      <section className="panel p-6" aria-labelledby="recent-heading">
-        <div className="flex items-center justify-between gap-4">
-          <h2 id="recent-heading" className="label">
-            Recent experiments
-          </h2>
-          <span className="font-mono text-[11px] text-ink-muted">0 saved</span>
-        </div>
-
-        <div className="mt-5 flex flex-col items-center gap-3 rounded-md border border-line bg-surface-2/60 px-6 py-10 text-center">
-          <Inbox size={22} strokeWidth={1.5} className="text-ink-muted" aria-hidden="true" />
-          <p className="text-sm font-medium tracking-tight text-ink">
-            No experiments yet
-          </p>
-          <p className="max-w-md text-[13px] leading-relaxed text-ink-muted">
-            Completed runs from the lab will be listed here with their step
-            count, counters and chosen algorithm. Experiment history has not
-            landed yet.
-          </p>
-          <Link
-            href="/sorting"
-            className="mt-1 flex h-9 items-center gap-2 rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink transition-colors hover:border-white/20"
-          >
-            <Clock3 size={14} strokeWidth={1.75} aria-hidden="true" />
-            Start in the Sorting Lab
-          </Link>
-        </div>
-      </section>
+      <RecentExperiments variant="dashboard" />
     </div>
   );
 }
