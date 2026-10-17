@@ -33,6 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   // Escape closes the drawer and trap focus when open.
   useEffect(() => {
     if (!menuOpen) return;
+    const toggle = toggleRef.current;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -73,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
-      toggleRef.current?.focus();
+      toggle?.focus();
     };
   }, [menuOpen]);
 

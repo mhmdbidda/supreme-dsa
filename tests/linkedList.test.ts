@@ -237,6 +237,9 @@ describe("VisualLinkedList · traverse and reverse", () => {
     expect(outcome.result).toEqual([]);
     expect(list.toArray()).toEqual([]);
     expectConsistentOutcome(outcome, []);
+
+    // The single step reports the (empty) original order.
+    expect(outcome.steps.map((step) => step.items)).toEqual([[]]);
   });
 
   it("reverse of a single node keeps it in place", () => {
@@ -246,6 +249,9 @@ describe("VisualLinkedList · traverse and reverse", () => {
     expect(outcome.result).toEqual([7]);
     expect(list.toArray()).toEqual([7]);
     expectConsistentOutcome(outcome, [7]);
+
+    // The single step reports the one-node list, unchanged.
+    expect(outcome.steps.map((step) => step.items)).toEqual([[7]]);
   });
 
   it("reverse of many nodes flips head and tail", () => {
@@ -267,6 +273,28 @@ describe("VisualLinkedList · traverse and reverse", () => {
     expect(list.toArray()).toEqual([0, 4, 3, 2, 1]);
     list.insertTail(5);
     expect(list.toArray()).toEqual([0, 4, 3, 2, 1, 5]);
+  });
+
+  it("reverse walk snapshots keep the ORIGINAL order; only the final step shows the reversed list", () => {
+    const list = build([1, 2, 3, 4]);
+    const outcome = list.reverse();
+
+    // Intro + one step per re-link + the final reveal.
+    expect(outcome.steps.map((step) => step.items)).toEqual([
+      [1, 2, 3, 4], // intro: the intact list
+      [1, 2, 3, 4], // re-link position 0
+      [1, 2, 3, 4], // re-link position 1
+      [1, 2, 3, 4], // re-link position 2
+      [1, 2, 3, 4], // re-link position 3
+      [4, 3, 2, 1], // final: the real reversed structure
+    ]);
+
+    // Every walk step marks the node being re-linked via `current`.
+    const walkSteps = outcome.steps.slice(1, -1);
+    expect(walkSteps.map((step) => step.pointers.current)).toEqual([0, 1, 2, 3]);
+    for (const step of walkSteps) {
+      expect(step.highlight).toHaveLength(1);
+    }
   });
 
   it("reverse twice restores the original order", () => {

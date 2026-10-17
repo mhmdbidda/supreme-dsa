@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useIsDesktop } from "@/hooks/useIsDesktop";
 import { cn } from "@/lib/utils";
 
 export type NavItem = {
@@ -38,6 +39,13 @@ type SidebarProps = {
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const isDesktop = useIsDesktop();
+
+  // Below lg the drawer is modal: closed = inert, open = a real dialog.
+  // At >= lg it is a plain, always-interactive sidebar — never inert, never
+  // a dialog. `useIsDesktop` defaults to desktop on the server so SSR markup
+  // never bakes in mobile-only dialog semantics.
+  const isModal = open && !isDesktop;
 
   return (
     <>
@@ -53,9 +61,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       <aside
         id="sidebar"
-        aria-modal={open ? "true" : "false"}
-        role={open ? "dialog" : undefined}
-        inert={!open}
+        aria-modal={isModal ? "true" : undefined}
+        role={isModal ? "dialog" : undefined}
+        inert={!isDesktop && !open}
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-line bg-surface transition-transform duration-200 lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",

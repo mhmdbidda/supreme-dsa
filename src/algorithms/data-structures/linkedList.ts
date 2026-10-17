@@ -288,14 +288,18 @@ export class VisualLinkedList {
   /** Reverses the list in place by re-linking every `next` pointer. */
   reverse(): DSOutcome {
     this.begin();
-    const values = this.toArray();
+    // Captured ONCE, before any re-linking: during the walk the chain is
+    // split in two, so no canonical head→tail read exists. Every walk
+    // snapshot keeps this ORIGINAL order; only the final snapshot reads the
+    // real (reversed) structure.
+    const original = this.toArray();
     if (this.count <= 1) {
       this.snapshot(
         this.count === 0
           ? "Reverse: the list is empty — nothing to reverse."
-          : `Reverse: only one node (${values[0]}) — the list is already its own reverse.`,
+          : `Reverse: only one node (${original[0]}) — the list is already its own reverse.`,
       );
-      return this.finish(values);
+      return this.finish(original);
     }
 
     this.snapshot(
@@ -318,6 +322,7 @@ export class VisualLinkedList {
         }.`,
         [index],
         index,
+        original,
       );
       prev = node;
       node = next;
@@ -473,9 +478,11 @@ export class VisualLinkedList {
     description: string,
     highlight: number[] = [],
     current?: number,
+    /** Overrides the live read — used by `reverse` mid-walk, when the chain is split in two and no canonical read exists yet. */
+    items?: number[],
   ): void {
     this.steps.push({
-      items: this.toArray(),
+      items: items === undefined ? this.toArray() : [...items],
       highlight: [...highlight],
       pointers:
         current === undefined

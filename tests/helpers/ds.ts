@@ -8,6 +8,8 @@ import type { DSOutcome, DSSnapshot } from "../../src/algorithms/data-structures
  * - at least one snapshot,
  * - every snapshot carries fresh `items` / `highlight` arrays (never
  *   aliases of another snapshot's arrays),
+ * - every `highlight` index and every named pointer index is a valid
+ *   position inside the SAME snapshot's `items`,
  * - the LAST snapshot always equals the structure's live state.
  */
 export function expectConsistentOutcome(
@@ -20,14 +22,27 @@ export function expectConsistentOutcome(
     expect(Array.isArray(step.items)).toBe(true);
     expect(Array.isArray(step.highlight)).toBe(true);
     expect(typeof step.description).toBe("string");
+
+    // Indices rendered against `items` must exist in `items` — a snapshot
+    // whose read collapsed mid-operation (e.g. a half-reversed list) would
+    // leave pointers or highlights pointing past the end.
+    for (const index of step.highlight) {
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(index).toBeLessThan(step.items.length);
+    }
+    for (const index of Object.values(step.pointers)) {
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(index).toBeLessThan(step.items.length);
+    }
   }
 
-  // Snapshots are copies, never aliases of each other.
-  for (let index = 1; index < outcome.steps.length; index += 1) {
-    expect(outcome.steps[index].items).not.toBe(outcome.steps[index - 1].items);
-    expect(outcome.steps[index].highlight).not.toBe(
-      outcome.steps[index - 1].highlight,
-    );
+  // Snapshots are copies, never aliases of each other — no two steps may
+  // share an `items` or `highlight` reference.
+  for (let a = 0; a < outcome.steps.length; a += 1) {
+    for (let b = a + 1; b < outcome.steps.length; b += 1) {
+      expect(outcome.steps[a].items).not.toBe(outcome.steps[b].items);
+      expect(outcome.steps[a].highlight).not.toBe(outcome.steps[b].highlight);
+    }
   }
 
   // The final step snapshot equals the structure's state after the operation.
