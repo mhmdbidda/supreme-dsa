@@ -1,0 +1,191 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  ArrowRight,
+  ArrowUpDown,
+  Clock3,
+  Database,
+  Gauge,
+  GitBranch,
+  Inbox,
+  Network,
+  type LucideIcon,
+} from "lucide-react";
+
+export const metadata: Metadata = { title: "Dashboard" };
+
+type Module = {
+  href: string;
+  title: string;
+  description: string;
+  status: "Ready" | "Coming next";
+  icon: LucideIcon;
+};
+
+const MODULES: Module[] = [
+  {
+    href: "/sorting",
+    title: "Sorting & Searching",
+    description:
+      "Step through comparisons, swaps and merges with live counters and complexity cards.",
+    status: "Ready",
+    icon: ArrowUpDown,
+  },
+  {
+    href: "/data-structures",
+    title: "Data Structures",
+    description:
+      "Push, pop, insert and traverse arrays, linked lists, stacks, queues and hash tables.",
+    status: "Coming next",
+    icon: Database,
+  },
+  {
+    href: "/trees",
+    title: "Trees",
+    description:
+      "Binary search trees, traversals and heaps, drawn node by node.",
+    status: "Coming next",
+    icon: GitBranch,
+  },
+  {
+    href: "/graphs",
+    title: "Graphs",
+    description:
+      "BFS, DFS and shortest paths over adjacency lists and matrices.",
+    status: "Coming next",
+    icon: Network,
+  },
+  {
+    href: "/complexity",
+    title: "Complexity",
+    description:
+      "Growth-rate curves and Big-O trade-offs backed by the lab's own counters.",
+    status: "Coming next",
+    icon: Gauge,
+  },
+];
+
+function StatusBadge({ status }: { status: Module["status"] }) {
+  const ready = status === "Ready";
+  return (
+    <span
+      className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] ${
+        ready
+          ? "border-sorted/50 bg-surface-2 text-sorted"
+          : "border-line bg-surface-2 text-ink-muted"
+      }`}
+    >
+      <span
+        className={`h-1.5 w-1.5 rounded-full ${ready ? "bg-sorted" : "bg-ink-muted"}`}
+        aria-hidden="true"
+      />
+      {status}
+    </span>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <div className="space-y-8">
+      <section className="flex flex-wrap items-end justify-between gap-6">
+        <div className="max-w-2xl">
+          <p className="label">CS 214 · Overview</p>
+          <h1 className="mt-3 text-3xl font-medium tracking-tight text-ink">
+            DSA Command Center
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+            An interactive visual lab: every algorithm runs as a pure function
+            that emits its steps up front, and the interface plays them back one
+            index at a time.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/sorting"
+            className="flex h-9 items-center gap-2 rounded-md border border-accent/60 bg-surface-2 px-4 text-[12px] font-medium tracking-tight text-accent transition-colors hover:bg-[#1c1c1c]"
+          >
+            Open Sorting Lab
+            <ArrowRight size={14} strokeWidth={1.75} aria-hidden="true" />
+          </Link>
+          <Link
+            href="/about"
+            className="flex h-9 items-center rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink-muted transition-colors hover:text-ink"
+          >
+            About the project
+          </Link>
+        </div>
+      </section>
+
+      <section aria-labelledby="modules-heading">
+        <div className="flex items-center justify-between gap-4">
+          <h2 id="modules-heading" className="label">
+            Modules
+          </h2>
+          <span className="font-mono text-[11px] text-ink-muted">
+            1 ready · 4 coming next
+          </span>
+        </div>
+
+        <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {MODULES.map((module) => {
+            const Icon = module.icon;
+            return (
+              <li key={module.href}>
+                <Link
+                  href={module.href}
+                  className="panel group flex h-full flex-col gap-3 p-5 transition-colors hover:border-white/20"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-md border border-line bg-surface-2 text-ink-muted transition-colors group-hover:text-accent">
+                      <Icon size={17} strokeWidth={1.75} aria-hidden="true" />
+                    </span>
+                    <StatusBadge status={module.status} />
+                  </div>
+                  <h3 className="text-[15px] font-medium tracking-tight text-ink">
+                    {module.title}
+                  </h3>
+                  <p className="text-[13px] leading-relaxed text-ink-muted">
+                    {module.description}
+                  </p>
+                  <span className="label mt-auto flex items-center gap-1.5 pt-1 transition-colors group-hover:text-ink">
+                    Open
+                    <ArrowRight size={12} strokeWidth={1.75} aria-hidden="true" />
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="panel p-6" aria-labelledby="recent-heading">
+        <div className="flex items-center justify-between gap-4">
+          <h2 id="recent-heading" className="label">
+            Recent experiments
+          </h2>
+          <span className="font-mono text-[11px] text-ink-muted">0 saved</span>
+        </div>
+
+        <div className="mt-5 flex flex-col items-center gap-3 rounded-md border border-line bg-surface-2/60 px-6 py-10 text-center">
+          <Inbox size={22} strokeWidth={1.5} className="text-ink-muted" aria-hidden="true" />
+          <p className="text-sm font-medium tracking-tight text-ink">
+            No experiments yet
+          </p>
+          <p className="max-w-md text-[13px] leading-relaxed text-ink-muted">
+            Completed runs from the lab will be listed here with their step
+            count, counters and chosen algorithm. Experiment history has not
+            landed yet.
+          </p>
+          <Link
+            href="/sorting"
+            className="mt-1 flex h-9 items-center gap-2 rounded-md border border-line bg-surface px-4 text-[12px] font-medium tracking-tight text-ink transition-colors hover:border-white/20"
+          >
+            <Clock3 size={14} strokeWidth={1.75} aria-hidden="true" />
+            Start in the Sorting Lab
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
+}
