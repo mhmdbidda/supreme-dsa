@@ -15,6 +15,15 @@ export const metadata: Metadata = {
   title: "Dashboard",
   description:
     "The DSA Command Center dashboard: jump into sorting, data structures, trees, graphs and complexity, and reopen recent benchmark experiments.",
+  // The dashboard moved from `/` to `/dashboard`; `/` is now the landing page.
+  openGraph: {
+    type: "website",
+    siteName: "DSA Command Center",
+    title: "Dashboard · DSA Command Center",
+    description:
+      "The DSA Command Center dashboard: jump into sorting, data structures, trees, graphs and complexity, and reopen recent benchmark experiments.",
+    url: "/dashboard",
+  },
 };
 
 type Module = {

@@ -9,11 +9,16 @@ Built with Next.js 15 (App Router), React 19, TypeScript (strict) and Tailwind C
 Fully static, no backend, no accounts, no data leaves the machine (saved benchmark runs
 live in `localStorage`).
 
+Routes are split into two route groups: the landing page at `/` renders in `(marketing)`
+with its own minimal layout (no sidebar), and everything else — dashboard, labs and about —
+renders in `(app)` inside the existing app shell, starting at `/dashboard`.
+
 ## Modules
 
 | Route | Module | What it does |
 | --- | --- | --- |
-| `/` | Dashboard | Module directory + recently saved benchmark experiments. |
+| `/` | Landing | Wordmark, hero with a live preview driven by the real bubble sort engine, the module grid and a "how it works" summary. |
+| `/dashboard` | Dashboard | Module directory + recently saved benchmark experiments. |
 | `/sorting` | Sorting & Searching | Bubble and merge sort; linear and binary search, with live comparison / swap / write counters and a bar chart. |
 | `/data-structures` | Data Structures | Stack, queue and singly linked list, drawn pointer by pointer. |
 | `/trees` | Trees | A binary search tree with insert, search, delete and inorder / preorder / postorder traversals. |
@@ -89,14 +94,17 @@ npm run dev        # http://localhost:3000
 ```
 src/
   app/                    Routes (App Router); metadata + layout + error/not-found
+    (marketing)/          Landing page at `/` — its own minimal layout, no sidebar
+    (app)/                Everything else inside the AppShell: dashboard, labs, about
   components/
     controls/             PlaybackControls, RangeControl, SegmentedControl (shared)
     layout/               AppShell, Sidebar, TopBar
+    marketing/            Landing-only components (the live hero sort preview)
     visualizers/          One lab per module + their visualizers (BarChart, TreeVisualizer, GraphCanvas, ...)
   algorithms/             Pure engines, one folder per module
     sorting/ searching/ data-structures/ trees/ graphs/ recursion/
   hooks/                  usePlayback, usePrefersReducedMotion, useRecentBenchmarkRuns
-  lib/                    benchmark, progress, utils
+  lib/                    benchmark, progress, utils, heroPreview (landing hero data), site (GitHub URL)
 tests/                    Vitest specs for the pure layer
 docs/COUNTERS.md          Exact counter definitions per algorithm
 ```
@@ -108,10 +116,10 @@ registry, so no page changes are needed.
 ## Testing
 
 The Vitest suite (`npm test`) targets the pure layer only: the algorithm engines, the
-playback reducer, the benchmark helpers and the parsers. It asserts the step contract the
-UI relies on — steps start from the untouched input, end on the finished result, never
-mutate their input, and report the counters they promise. The interactive layer is verified
-by hand.
+playback reducer, the benchmark helpers, the parsers and the landing hero's loop helper. It
+asserts the step contract the UI relies on — steps start from the untouched input, end on
+the finished result, never mutate their input, and report the counters they promise. The
+interactive layer is verified by hand.
 
 ## Accessibility notes
 

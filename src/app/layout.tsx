@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
 
 const inter = Inter({
@@ -56,7 +55,10 @@ export default function RootLayout({
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <AppShell>{children}</AppShell>
+        {/* Route groups own their chrome: `(app)` renders inside the AppShell,
+            `(marketing)` has its own minimal layout — both provide `main#main`,
+            so this skip link works on every route (error / not-found included). */}
+        {children}
         <div className="grain" aria-hidden="true" />
       </body>
     </html>

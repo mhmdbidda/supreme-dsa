@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
 
 const TITLES: Record<string, string> = {
-  "/": "Dashboard",
+  "/dashboard": "Dashboard",
   "/sorting": "Sorting & Searching",
   "/data-structures": "Data Structures",
   "/trees": "Trees",

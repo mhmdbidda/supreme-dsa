@@ -23,7 +23,9 @@ export type NavItem = {
 };
 
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  // The logo above links to the landing page (`/`); the Dashboard is its own
+  // explicit entry now that the dashboard moved to `/dashboard`.
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/sorting", label: "Sorting", icon: ArrowUpDown },
   { href: "/data-structures", label: "Data Structures", icon: Database },
   { href: "/trees", label: "Trees", icon: GitBranch },
