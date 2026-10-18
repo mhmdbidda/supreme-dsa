@@ -10,6 +10,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { RecentExperiments } from "@/components/RecentExperiments";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     title: "Dashboard · DSA Command Center",
     description:
       "The DSA Command Center dashboard: jump into sorting, data structures, trees, graphs and complexity, and reopen recent benchmark experiments.",
-    url: "/dashboard",
+    url: `${SITE_URL}/dashboard`,
   },
 };
 

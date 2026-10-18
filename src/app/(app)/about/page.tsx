@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { GITHUB_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
@@ -203,6 +204,15 @@ npm run check      # all of the above, in order`}
         </h2>
         <div className="mt-4 space-y-4 text-sm leading-relaxed text-ink-muted">
           <p>© 2026 Mohamed Bilal. All rights reserved.</p>
+          <p>
+            <a
+              href={GITHUB_URL}
+              className="inline-flex items-center gap-1.5 text-accent transition-colors hover:text-ink"
+            >
+              Source code on GitHub
+              <ArrowUpRight size={13} strokeWidth={2} aria-hidden="true" />
+            </a>
+          </p>
         </div>
       </section>
     </div>

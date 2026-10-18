@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -14,17 +15,13 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-/**
- * Canonical origin used to resolve absolute URLs in Open Graph metadata.
- * Override with `NEXT_PUBLIC_SITE_URL` when deploying to a real domain.
- */
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://dsa-command-center.vercel.app";
-
 const DESCRIPTION =
   "An interactive visual lab for Data Structures and Algorithms (CS 214): sorting, searching, data structures, trees, graphs and complexity, all running in the browser.";
 
 export const metadata: Metadata = {
+  // Canonical origin for every absolute URL below; shared with the pages
+  // through `SITE_URL` in `src/lib/site.ts` (overridable via
+  // `NEXT_PUBLIC_SITE_URL`).
   metadataBase: new URL(SITE_URL),
   title: {
     default: "DSA Command Center",
@@ -37,7 +34,7 @@ export const metadata: Metadata = {
     siteName: "DSA Command Center",
     title: "DSA Command Center",
     description: DESCRIPTION,
-    url: "/",
+    url: SITE_URL,
   },
   twitter: {
     card: "summary",

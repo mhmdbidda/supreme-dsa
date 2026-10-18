@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { HeroSortPreview } from "@/components/marketing/HeroSortPreview";
+import { SITE_URL } from "@/lib/site";
 
 const DESCRIPTION =
   "An interactive lab for sorting, searching, data structures, trees, graphs and complexity, where every algorithm runs step by step with real operation counters.";
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     siteName: "DSA Command Center",
     title: "DSA Command Center — interactive visual lab",
     description: DESCRIPTION,
-    url: "/",
+    url: SITE_URL,
   },
   twitter: {
     card: "summary",

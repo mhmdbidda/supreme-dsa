@@ -1,5 +1,7 @@
 # DSA Command Center
 
+Live: https://supreme-dsa.vercel.app
+
 An interactive visual lab for Data Structures and Algorithms (CS 214). Every algorithm
 runs in the browser as a pure function that emits its whole step stream up front; the
 interface then plays that stream back one index at a time. Counters and drawings are both
@@ -104,7 +106,7 @@ src/
   algorithms/             Pure engines, one folder per module
     sorting/ searching/ data-structures/ trees/ graphs/ recursion/
   hooks/                  usePlayback, usePrefersReducedMotion, useRecentBenchmarkRuns
-  lib/                    benchmark, progress, utils, heroPreview (landing hero data), site (GitHub URL)
+  lib/                    benchmark, progress, utils, heroPreview (landing hero data), site (site + GitHub URLs)
 tests/                    Vitest specs for the pure layer
 docs/COUNTERS.md          Exact counter definitions per algorithm
 ```
@@ -144,10 +146,11 @@ build command (`next build`) and Node 20 (from `.nvmrc`), and deploy.
 To point Open Graph / canonical URLs at a real domain, set:
 
 ```
-NEXT_PUBLIC_SITE_URL=https://your-domain.example
+NEXT_PUBLIC_SITE_URL=https://supreme-dsa.vercel.app
 ```
 
-It defaults to `https://dsa-command-center.vercel.app` when unset.
+It defaults to `https://supreme-dsa.vercel.app` (the `SITE_URL` constant in
+`src/lib/site.ts`) when unset.
 
 ## Author
 
@@ -157,5 +160,19 @@ It defaults to `https://dsa-command-center.vercel.app` when unset.
 
 This project is licensed under the terms in the [LICENSE](LICENSE) file. See the LICENSE for details.
 
-<!-- Live URL: [to be filled in] -->
-<!-- Screenshots: [to be filled in] -->
+## Screenshots
+
+![Landing page preview](docs/screenshots/landing.png)
+*Landing page with a live Bubble Sort preview*
+
+![Sorting Lab](docs/screenshots/sorting.png)
+*Sorting Lab with live counters and step description*
+
+![Graph Studio](docs/screenshots/graphs.png)
+*Graph Studio with BFS traversal and adjacency views*
+
+![Benchmark Center](docs/screenshots/benchmark.png)
+*Benchmark Center growth curves (Bubble vs Merge Sort)*
+
+![Tree Explorer](docs/screenshots/trees.png)
+*Tree Explorer with a Binary Search Tree*
