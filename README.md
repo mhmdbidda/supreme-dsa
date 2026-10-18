@@ -149,6 +149,13 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.example
 
 It defaults to `https://dsa-command-center.vercel.app` when unset.
 
+## Author
+
+**Mohamed Bilal** — [https://github.com/mhmdbidda/supreme-dsa](https://github.com/mhmdbidda/supreme-dsa)
+
 ## License
 
-Private coursework project — not licensed for redistribution.
+This project is licensed under the terms in the [LICENSE](LICENSE) file. See the LICENSE for details.
+
+<!-- Live URL: [to be filled in] -->
+<!-- Screenshots: [to be filled in] -->

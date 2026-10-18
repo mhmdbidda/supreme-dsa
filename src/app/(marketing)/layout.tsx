@@ -65,9 +65,14 @@ export default function MarketingLayout({
 
       <footer className="border-t border-line">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
-          <p className="text-[12px] leading-relaxed text-ink-muted">
-            CS 214 · Runs entirely in the browser — no backend, no accounts.
-          </p>
+          <div className="flex flex-col gap-1">
+            <p className="text-[12px] leading-relaxed text-ink-muted">
+              CS 214 · Runs entirely in the browser — no backend, no accounts.
+            </p>
+            <p className="text-[12px] leading-relaxed text-ink-muted">
+              © 2026 Mohamed Bilal. All rights reserved.
+            </p>
+          </div>
           <a
             href={GITHUB_URL}
             className="inline-flex w-fit items-center gap-1.5 rounded-sm text-[13px] tracking-tight text-ink-muted transition-colors hover:text-ink"

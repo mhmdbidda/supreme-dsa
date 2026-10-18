@@ -196,6 +196,15 @@ npm run check      # all of the above, in order`}
           </p>
         </div>
       </section>
+
+      <section className="panel p-6 sm:p-8" aria-labelledby="attribution-heading">
+        <h2 id="attribution-heading" className="label">
+          Attribution
+        </h2>
+        <div className="mt-4 space-y-4 text-sm leading-relaxed text-ink-muted">
+          <p>© 2026 Mohamed Bilal. All rights reserved.</p>
+        </div>
+      </section>
     </div>
   );
 }
